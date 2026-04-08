@@ -16,6 +16,7 @@ export default class PipelineChart extends LightningElement {
 
     _data = [];
     _error;
+    _wired = false;
 
     get usePicklistSort() {
         return !!this.objectApiName && !!this.picklistField;
@@ -29,6 +30,7 @@ export default class PipelineChart extends LightningElement {
     })
     wiredPicklistData({ error, data }) {
         if (!this.usePicklistSort) return;
+        this._wired = true;
         if (data) {
             this._data = data;
             this._error = undefined;
@@ -41,6 +43,7 @@ export default class PipelineChart extends LightningElement {
     @wire(executeQuery, { query: '$query', recordId: '$recordId' })
     wiredData({ error, data }) {
         if (this.usePicklistSort) return;
+        this._wired = true;
         if (data) {
             this._data = data;
             this._error = undefined;
@@ -62,7 +65,7 @@ export default class PipelineChart extends LightningElement {
     }
 
     get isLoading() {
-        return !this._data.length && !this._error;
+        return !this._wired;
     }
 
     get errorMessage() {
@@ -98,32 +101,38 @@ export default class PipelineChart extends LightningElement {
         // Interpolate colors across all stages
         const colors = this._interpolateColors(n);
 
+        const chevronDepth = Math.min(segWidth * 0.12, 15);
+
         return data.map((d, i) => {
-            const leftH = heights[i];
-            const rightH = i < n - 1 ? heights[i + 1] : leftH * 0.7;
+            const h = heights[i];
+            const nextH = i < n - 1 ? heights[i + 1] : h * 0.7;
             const x1 = i * segWidth;
             const x2 = (i + 1) * segWidth;
 
-            // Trapezoid: top-left, top-right, bottom-right, bottom-left
-            const topLeft = `${x1},${centerY - leftH / 2}`;
-            const topRight = `${x2},${centerY - rightH / 2}`;
-            const bottomRight = `${x2},${centerY + rightH / 2}`;
-            const bottomLeft = `${x1},${centerY + leftH / 2}`;
+            // Pentagon: left edge at full height, right edge steps down
+            // with a chevron point where the next stage begins.
+            // Shape: topLeft -> topRight -> chevronPoint -> bottomRight -> bottomLeft
+            const topLeft = `${x1},${centerY - h / 2}`;
+            const topRight = `${x2 - chevronDepth},${centerY - h / 2}`;
+            const chevronTop = `${x2},${centerY - nextH / 2}`;
+            const chevronBottom = `${x2},${centerY + nextH / 2}`;
+            const bottomRight = `${x2 - chevronDepth},${centerY + h / 2}`;
+            const bottomLeft = `${x1},${centerY + h / 2}`;
 
             return {
                 key: `stage-${i}`,
                 labelKey: `label-${i}`,
                 valueKey: `value-${i}`,
-                points: `${topLeft} ${topRight} ${bottomRight} ${bottomLeft}`,
+                points: `${topLeft} ${topRight} ${chevronTop} ${chevronBottom} ${bottomRight} ${bottomLeft}`,
                 fillStyle: `fill: ${colors[i]};`,
                 label: d.label,
                 valueText: formatValue(d.value, {
                     prefix: this.resolvedPrefix,
                     suffix: this.valueSuffix
                 }),
-                labelX: x1 + segWidth / 2,
+                labelX: x1 + (segWidth - chevronDepth) / 2,
                 labelY: 12,
-                valueX: x1 + segWidth / 2,
+                valueX: x1 + (segWidth - chevronDepth) / 2,
                 valueY: centerY
             };
         });

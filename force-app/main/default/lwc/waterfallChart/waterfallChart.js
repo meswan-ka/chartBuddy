@@ -21,9 +21,11 @@ export default class WaterfallChart extends LightningElement {
 
     _data = [];
     _error;
+    _wired = false;
 
     @wire(executeQuery, { query: '$query', recordId: '$recordId' })
     wiredData({ error, data }) {
+        this._wired = true;
         if (data) {
             this._data = data;
             this._error = undefined;
@@ -45,7 +47,7 @@ export default class WaterfallChart extends LightningElement {
     }
 
     get isLoading() {
-        return !this._data.length && !this._error;
+        return !this._wired;
     }
 
     get errorMessage() {
