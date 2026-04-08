@@ -1,6 +1,7 @@
 <template>
     <div class="gauge-container">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 70" class="gauge-svg">
+            <defs lwc:dom="manual" class="gauge-defs"></defs>
             <template lwc:if={hasData}>
                 <!-- Title -->
                 <text x={trackX} y="14" class="gauge-title" fill={titleColor}>{chartTitle}</text>

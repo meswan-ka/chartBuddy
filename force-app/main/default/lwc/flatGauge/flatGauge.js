@@ -19,6 +19,7 @@ export default class FlatGauge extends LightningElement {
     @api referenceLabel = 'Avg';
     @api valuePrefix = '';
     @api valueSuffix = '';
+    @api gradientStops;
     @api recordId;
 
     rawValue = null;
@@ -92,8 +93,47 @@ export default class FlatGauge extends LightningElement {
         return BAR_RADIUS;
     }
 
+    get hasGradient() {
+        return !!this.gradientStops;
+    }
+
     get fillColor() {
+        if (this.hasGradient) return 'url(#flat-gauge-grad)';
         return COLORS.gaugeFill;
+    }
+
+    _gradientSynced = false;
+
+    renderedCallback() {
+        if (this.hasGradient && !this._gradientSynced && this.hasData) {
+            this._syncGradient();
+        }
+    }
+
+    _syncGradient() {
+        const defs = this.template.querySelector('.gauge-defs');
+        if (!defs) return;
+        while (defs.firstChild) {
+            defs.removeChild(defs.firstChild);
+        }
+        const ns = 'http://www.w3.org/2000/svg';
+        const stops = this.gradientStops.split(',').map(s => s.trim()).filter(Boolean);
+        if (!stops.length) return;
+        const grad = document.createElementNS(ns, 'linearGradient');
+        grad.setAttribute('id', 'flat-gauge-grad');
+        grad.setAttribute('x1', '0');
+        grad.setAttribute('y1', '0');
+        grad.setAttribute('x2', '1');
+        grad.setAttribute('y2', '0');
+        stops.forEach((color, idx) => {
+            const stop = document.createElementNS(ns, 'stop');
+            const offset = stops.length === 1 ? '100%' : `${Math.round((idx / (stops.length - 1)) * 100)}%`;
+            stop.setAttribute('offset', offset);
+            stop.setAttribute('stop-color', color);
+            grad.appendChild(stop);
+        });
+        defs.appendChild(grad);
+        this._gradientSynced = true;
     }
 
     get valueText() {

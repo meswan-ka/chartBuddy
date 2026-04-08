@@ -15,6 +15,7 @@
             <property name="referenceLabel" type="String" label="Reference Label" default="Avg" />
             <property name="valuePrefix" type="String" label="Value Prefix" />
             <property name="valueSuffix" type="String" label="Value Suffix" description="e.g. M, %, K" />
+            <property name="gradientStops" type="String" label="Gradient Colors" description="Comma-separated hex colors for fill gradient, e.g. #2E844A,#FFB03B,#C23934" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
