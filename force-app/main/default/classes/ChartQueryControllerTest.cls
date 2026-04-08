@@ -48,6 +48,35 @@ private class ChartQueryControllerTest {
     }
 
     @IsTest
+    static void testExecuteQueryWithPicklistSort() {
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        String query = 'SELECT StageName label, COUNT(Id) cnt FROM Opportunity WHERE AccountId = :recordId GROUP BY StageName';
+        List<ChartQueryController.ChartDataPoint> results = ChartQueryController.executeQueryWithPicklistSort(
+            query,
+            acc.Id,
+            'Opportunity',
+            'StageName'
+        );
+        Assert.isFalse(results.isEmpty(), 'Should return results');
+        if (results.size() > 1) {
+            Assert.areEqual('Prospecting', results[0].label, 'Prospecting should sort first');
+        }
+    }
+
+    @IsTest
+    static void testPicklistSortWithoutObjectFallsBack() {
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        String query = 'SELECT StageName label, COUNT(Id) cnt FROM Opportunity WHERE AccountId = :recordId GROUP BY StageName';
+        List<ChartQueryController.ChartDataPoint> results = ChartQueryController.executeQueryWithPicklistSort(
+            query,
+            acc.Id,
+            null,
+            null
+        );
+        Assert.isFalse(results.isEmpty(), 'Should still return results without sort params');
+    }
+
+    @IsTest
     static void testBlankQueryThrows() {
         Boolean threw = false;
         try {

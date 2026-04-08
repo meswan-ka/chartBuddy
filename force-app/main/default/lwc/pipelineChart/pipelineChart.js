@@ -1,5 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import executeQuery from '@salesforce/apex/ChartQueryController.executeQuery';
+import executeQueryWithPicklistSort from '@salesforce/apex/ChartQueryController.executeQueryWithPicklistSort';
 import CURRENCY from '@salesforce/i18n/currency';
 import LOCALE from '@salesforce/i18n/locale';
 import { PIPELINE_COLORS, formatValue, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
@@ -9,13 +10,37 @@ export default class PipelineChart extends LightningElement {
     @api query;
     @api valuePrefix = '$';
     @api valueSuffix = 'm';
+    @api objectApiName;
+    @api picklistField;
     @api recordId;
 
     _data = [];
     _error;
 
+    get usePicklistSort() {
+        return !!this.objectApiName && !!this.picklistField;
+    }
+
+    @wire(executeQueryWithPicklistSort, {
+        query: '$query',
+        recordId: '$recordId',
+        objectApiName: '$objectApiName',
+        picklistFieldName: '$picklistField'
+    })
+    wiredPicklistData({ error, data }) {
+        if (!this.usePicklistSort) return;
+        if (data) {
+            this._data = data;
+            this._error = undefined;
+        } else if (error) {
+            this._error = error;
+            this._data = [];
+        }
+    }
+
     @wire(executeQuery, { query: '$query', recordId: '$recordId' })
     wiredData({ error, data }) {
+        if (this.usePicklistSort) return;
         if (data) {
             this._data = data;
             this._error = undefined;

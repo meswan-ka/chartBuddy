@@ -68,6 +68,57 @@ public with sharing class ChartQueryController {
         return 0;
     }
 
+    @AuraEnabled(cacheable=true)
+    public static List<ChartDataPoint> executeQueryWithPicklistSort(
+        String query,
+        String recordId,
+        String objectApiName,
+        String picklistFieldName
+    ) {
+        List<ChartDataPoint> points = executeQuery(query, recordId);
+        if (String.isBlank(objectApiName) || String.isBlank(picklistFieldName)) {
+            return points;
+        }
+        Map<String, Integer> positionMap = getPicklistPositions(objectApiName, picklistFieldName);
+        Integer fallback = positionMap.size();
+        points.sort(new PicklistSorter(positionMap, fallback));
+        return points;
+    }
+
+    private static Map<String, Integer> getPicklistPositions(String objectApiName, String fieldName) {
+        Map<String, Integer> positions = new Map<String, Integer>();
+        Schema.SObjectType sot = Schema.getGlobalDescribe().get(objectApiName);
+        if (sot == null) {
+            return positions;
+        }
+        Schema.DescribeFieldResult dfr = sot.getDescribe().fields.getMap().get(fieldName)?.getDescribe();
+        if (dfr == null || dfr.getType() != Schema.DisplayType.PICKLIST) {
+            return positions;
+        }
+        Integer idx = 0;
+        for (Schema.PicklistEntry ple : dfr.getPicklistValues()) {
+            positions.put(ple.getValue(), idx);
+            idx++;
+        }
+        return positions;
+    }
+
+    private class PicklistSorter implements System.Comparator<ChartDataPoint> {
+        private Map<String, Integer> positions;
+        private Integer fallback;
+
+        public PicklistSorter(Map<String, Integer> positions, Integer fallback) {
+            this.positions = positions;
+            this.fallback = fallback;
+        }
+
+        public Integer compare(ChartDataPoint a, ChartDataPoint b) {
+            Integer posA = this.positions.containsKey(a.label) ? this.positions.get(a.label) : this.fallback;
+            Integer posB = this.positions.containsKey(b.label) ? this.positions.get(b.label) : this.fallback;
+            return posA - posB;
+        }
+    }
+
     private static String sanitizeQuery(String query) {
         String upper = query.toUpperCase().trim();
         if (!upper.startsWith('SELECT')) {
