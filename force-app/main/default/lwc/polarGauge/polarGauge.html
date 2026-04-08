@@ -1,0 +1,41 @@
+<template>
+    <div class="gauge-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="gauge-svg">
+            <template lwc:if={hasData}>
+                <!-- Track arc -->
+                <path
+                    d={trackPath}
+                    fill="none"
+                    stroke={trackColor}
+                    stroke-width={strokeWidth}
+                    stroke-linecap="round"
+                ></path>
+
+                <!-- Fill arc -->
+                <path
+                    d={fillPath}
+                    fill="none"
+                    stroke={fillColor}
+                    stroke-width={strokeWidth}
+                    stroke-linecap="round"
+                ></path>
+
+                <!-- Center value -->
+                <text x="100" y="106" class="gauge-value" fill={titleColor}>
+                    {displayValue}
+                </text>
+                <text x="100" y="124" class="gauge-suffix" fill={titleColor}>
+                    {displaySuffix}
+                </text>
+            </template>
+        </svg>
+
+        <template lwc:if={chartTitle}>
+            <p class="gauge-caption">{chartTitle}</p>
+        </template>
+
+        <template lwc:if={error}>
+            <p class="error-text">Unable to load gauge data.</p>
+        </template>
+    </div>
+</template>

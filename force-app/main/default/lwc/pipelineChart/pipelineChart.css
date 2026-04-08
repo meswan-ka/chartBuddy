@@ -1,0 +1,35 @@
+.chart-container {
+    position: relative;
+    width: 100%;
+    padding: 0.5rem;
+    background: #ffffff;
+    border-radius: 0.25rem;
+}
+
+.chart-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.chart-title {
+    text-align: center;
+    font-size: 13px;
+    color: #181818;
+    margin-top: 0.25rem;
+    font-weight: 400;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+}
+
+.error-message {
+    color: #c23934;
+    font-size: 12px;
+    text-align: center;
+    padding: 1rem;
+}

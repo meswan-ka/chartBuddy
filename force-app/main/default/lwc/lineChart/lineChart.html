@@ -1,0 +1,117 @@
+<template>
+    <div class="chart-container" style={containerStyle}>
+        <template if:true={hasError}>
+            <div class="error-message">{errorMessage}</div>
+        </template>
+        <template if:true={hasData}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} preserveAspectRatio="xMidYMid meet" role="img" aria-label={chartTitle}>
+
+                <!-- Grid lines -->
+                <template for:each={gridLines} for:item="line">
+                    <line
+                        key={line.key}
+                        x1={line.x1}
+                        y1={line.y1}
+                        x2={line.x2}
+                        y2={line.y2}
+                        stroke={gridColor}
+                        stroke-width="1"
+                    ></line>
+                </template>
+
+                <!-- Primary area fill -->
+                <template if:true={showArea}>
+                    <polygon
+                        points={primaryAreaPoints}
+                        fill={primaryAreaFill}
+                        fill-opacity="0.15"
+                    ></polygon>
+                </template>
+
+                <!-- Secondary area fill -->
+                <template if:true={showArea}>
+                    <template if:true={hasDualAxis}>
+                        <polygon
+                            points={secondaryAreaPoints}
+                            fill={secondaryAreaFill}
+                            fill-opacity="0.15"
+                        ></polygon>
+                    </template>
+                </template>
+
+                <!-- Primary line -->
+                <polyline
+                    points={primaryLinePoints}
+                    fill="none"
+                    stroke={primaryColor}
+                    stroke-width="2"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                ></polyline>
+
+                <!-- Secondary line -->
+                <template if:true={hasDualAxis}>
+                    <polyline
+                        points={secondaryLinePoints}
+                        fill="none"
+                        stroke={secondaryColor}
+                        stroke-width="2"
+                        stroke-linejoin="round"
+                        stroke-linecap="round"
+                    ></polyline>
+                </template>
+
+                <!-- Y axis labels (primary, left) -->
+                <template for:each={yAxisLabels} for:item="label">
+                    <text
+                        key={label.key}
+                        x={label.x}
+                        y={label.y}
+                        text-anchor="end"
+                        fill={axisTextColor}
+                        font-size="11"
+                    >{label.text}</text>
+                </template>
+
+                <!-- Y axis labels (secondary, right) -->
+                <template if:true={hasDualAxis}>
+                    <template for:each={secondaryYAxisLabels} for:item="label">
+                        <text
+                            key={label.key}
+                            x={label.x}
+                            y={label.y}
+                            text-anchor="start"
+                            fill={axisTextColor}
+                            font-size="11"
+                        >{label.text}</text>
+                    </template>
+                </template>
+
+                <!-- X axis labels -->
+                <template for:each={xAxisLabels} for:item="label">
+                    <text
+                        key={label.key}
+                        x={label.x}
+                        y={label.y}
+                        text-anchor="middle"
+                        fill={axisTextColor}
+                        font-size="11"
+                    >{label.text}</text>
+                </template>
+
+                <!-- Chart title -->
+                <template if:true={chartTitle}>
+                    <text
+                        x={titleX}
+                        y={titleY}
+                        text-anchor="middle"
+                        fill={titleColor}
+                        font-size="13"
+                        font-weight="400"
+                    >{chartTitle}</text>
+                </template>
+
+            </svg>
+        </template>
+    </div>
+</template>

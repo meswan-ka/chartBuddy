@@ -1,0 +1,53 @@
+<template>
+    <div class="gauge-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 70" class="gauge-svg">
+            <template lwc:if={hasData}>
+                <!-- Title -->
+                <text x={trackX} y="14" class="gauge-title" fill={titleColor}>{chartTitle}</text>
+
+                <!-- Track (background) -->
+                <rect
+                    x={trackX}
+                    y={trackY}
+                    width={trackWidth}
+                    height={trackHeight}
+                    rx={trackRx}
+                    fill={trackFill}
+                ></rect>
+
+                <!-- Fill (value) -->
+                <rect
+                    x={fillX}
+                    y={fillY}
+                    width={fillWidth}
+                    height={fillHeight}
+                    rx={fillRx}
+                    fill={fillColor}
+                ></rect>
+
+                <!-- Value label -->
+                <text x={valueLabelX} y={valueLabelY} class="gauge-value" fill={titleColor}>
+                    {valueText}
+                </text>
+
+                <!-- Reference line -->
+                <template lwc:if={hasReference}>
+                    <line
+                        x1={referenceX}
+                        y1={referenceLineY1}
+                        x2={referenceX}
+                        y2={referenceLineY2}
+                        class="reference-line"
+                    ></line>
+                    <text x={referenceX} y={referenceLabelY} class="reference-label" fill={axisTextColor}>
+                        {referenceLabel}
+                    </text>
+                </template>
+            </template>
+        </svg>
+
+        <template lwc:if={error}>
+            <p class="error-text">Unable to load gauge data.</p>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage">
+            <property name="chartTitle" type="String" label="Chart Title" />
+            <property name="query" type="String" label="SOQL Query" description="Use :recordId for context binding" />
+            <property name="labelField" type="String" label="Label Field (X Axis)" />
+            <property name="valueField" type="String" label="Value Field (Primary)" />
+            <property name="secondaryValueField" type="String" label="Value Field (Secondary)" />
+            <property name="showArea" type="Boolean" label="Show Area Fill" default="true" />
+            <property name="valuePrefix" type="String" label="Value Prefix" />
+            <property name="valueSuffix" type="String" label="Value Suffix" />
+            <property name="secondaryPrefix" type="String" label="Secondary Prefix" />
+            <property name="secondarySuffix" type="String" label="Secondary Suffix" />
+            <property name="height" type="Integer" label="Chart Height" default="300" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

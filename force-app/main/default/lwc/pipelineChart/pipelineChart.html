@@ -1,0 +1,57 @@
+<template>
+    <div class="chart-container">
+        <template lwc:if={hasData}>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="chart-svg"
+                 viewBox="0 0 600 140"
+                 preserveAspectRatio="xMidYMid meet"
+                 role="img"
+                 aria-label={chartTitle}>
+
+                <!-- Stage labels above shapes -->
+                <template for:each={stages} for:item="stage">
+                    <text key={stage.labelKey}
+                          x={stage.labelX}
+                          y={stage.labelY}
+                          text-anchor="middle"
+                          font-size="11"
+                          fill="#706E6B">{stage.label}</text>
+                </template>
+
+                <!-- Trapezoid polygons -->
+                <template for:each={stages} for:item="stage">
+                    <polygon key={stage.key}
+                             points={stage.points}
+                             style={stage.fillStyle}></polygon>
+                </template>
+
+                <!-- Value labels inside shapes -->
+                <template for:each={stages} for:item="stage">
+                    <text key={stage.valueKey}
+                          x={stage.valueX}
+                          y={stage.valueY}
+                          text-anchor="middle"
+                          dominant-baseline="central"
+                          font-size="14"
+                          font-weight="bold"
+                          fill="#FFFFFF">{stage.valueText}</text>
+                </template>
+            </svg>
+
+            <!-- Chart title -->
+            <template lwc:if={chartTitle}>
+                <div class="chart-title">{chartTitle}</div>
+            </template>
+        </template>
+
+        <template lwc:if={isLoading}>
+            <div class="loading">
+                <lightning-spinner alternative-text="Loading chart data" size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <template lwc:if={errorMessage}>
+            <div class="error-message">{errorMessage}</div>
+        </template>
+    </div>
+</template>

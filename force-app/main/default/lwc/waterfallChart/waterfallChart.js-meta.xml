@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage">
+            <property name="chartTitle" type="String" label="Chart Title" />
+            <property name="query" type="String" label="SOQL Query" description="Use :recordId for context binding" />
+            <property name="mode" type="String" label="Data Mode" default="delta" description="delta or cumulative" />
+            <property name="valuePrefix" type="String" label="Value Prefix" default="$" />
+            <property name="valueSuffix" type="String" label="Value Suffix" />
+            <property name="height" type="Integer" label="Chart Height" default="300" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

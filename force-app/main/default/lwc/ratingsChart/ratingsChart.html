@@ -1,0 +1,25 @@
+<template>
+    <div class="ratings-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} class="ratings-svg">
+            <template lwc:if={hasData}>
+                <template for:each={dots} for:item="dot">
+                    <circle
+                        key={dot.key}
+                        cx={dot.cx}
+                        cy={dot.cy}
+                        r={dot.r}
+                        fill={dot.fill}
+                    ></circle>
+                </template>
+            </template>
+        </svg>
+
+        <template lwc:if={chartTitle}>
+            <p class="ratings-caption">{chartTitle}</p>
+        </template>
+
+        <template lwc:if={error}>
+            <p class="error-text">Unable to load ratings data.</p>
+        </template>
+    </div>
+</template>

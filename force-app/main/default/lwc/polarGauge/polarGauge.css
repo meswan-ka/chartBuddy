@@ -1,0 +1,37 @@
+.gauge-container {
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.gauge-svg {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    display: inline-block;
+}
+
+.gauge-value {
+    font-size: 36px;
+    font-weight: 700;
+    text-anchor: middle;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+.gauge-suffix {
+    font-size: 14px;
+    font-weight: 400;
+    text-anchor: middle;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+.gauge-caption {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--slds-g-color-neutral-base-30, #706e6b);
+}
+
+.error-text {
+    color: var(--slds-g-color-error-base-40, #c23934);
+    font-size: 0.8125rem;
+    margin: 0.5rem 0 0;
+}

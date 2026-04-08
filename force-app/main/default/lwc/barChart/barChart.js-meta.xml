@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage">
+            <property name="chartTitle" type="String" label="Chart Title" description="Title displayed below the chart" />
+            <property name="query" type="String" label="SOQL Query" description="SOQL query with :recordId placeholder for dynamic binding" />
+            <property name="labelField" type="String" label="Label Field" description="API name of the field used for category labels" />
+            <property name="valueField" type="String" label="Value Field" description="API name of the field used for numeric values" />
+            <property name="seriesField" type="String" label="Series Field" description="API name of the field used for series grouping (enables stacked/grouped)" />
+            <property name="orientation" type="String" label="Orientation" default="vertical" datasource="vertical,horizontal" description="Chart orientation: vertical columns or horizontal bars" />
+            <property name="variant" type="String" label="Variant" default="simple" datasource="simple,stacked,grouped" description="Chart variant: simple, stacked, or grouped" />
+            <property name="valuePrefix" type="String" label="Value Prefix" description="Prefix for axis values, e.g. $" />
+            <property name="valueSuffix" type="String" label="Value Suffix" description="Suffix for axis values, e.g. M" />
+            <property name="height" type="Integer" label="Chart Height (px)" default="300" description="Height of the chart area in pixels" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
