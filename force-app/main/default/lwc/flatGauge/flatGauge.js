@@ -152,6 +152,18 @@ export default class FlatGauge extends LightningElement {
         return BAR_Y + BAR_HEIGHT / 2 + 6;
     }
 
+    get hasSuperscript() {
+        return !!this.targetText || this.hasVariance;
+    }
+
+    get superscriptX() {
+        return BAR_RIGHT + 10;
+    }
+
+    get superscriptY() {
+        return BAR_Y + 4;
+    }
+
     get targetText() {
         const target = this.hasReference ? this.referenceValue : this.maxValue;
         if (!target) return '';

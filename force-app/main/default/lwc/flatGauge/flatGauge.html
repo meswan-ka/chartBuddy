@@ -26,16 +26,20 @@
                     fill={fillColor}
                 ></rect>
 
-                <!-- Value + target + variance on one line -->
+                <!-- Value with superscript target + variance -->
                 <text x={valueLabelX} y={valueLabelY}>
                     <tspan class="gauge-value" fill={titleColor}>{valueText}</tspan>
-                    <template lwc:if={targetText}>
-                        <tspan class="gauge-target" fill={axisTextColor} dx="4">{targetText}</tspan>
-                    </template>
-                    <template lwc:if={hasVariance}>
-                        <tspan class="gauge-variance" fill={varianceColor} dx="6">{varianceText}</tspan>
-                    </template>
                 </text>
+                <template lwc:if={hasSuperscript}>
+                    <text x={superscriptX} y={superscriptY} class="gauge-superscript" fill={axisTextColor}>
+                        <template lwc:if={targetText}>
+                            <tspan>{targetText}</tspan>
+                        </template>
+                        <template lwc:if={hasVariance}>
+                            <tspan dx="3" fill={varianceColor}>{varianceText}</tspan>
+                        </template>
+                    </text>
+                </template>
 
                 <!-- Reference line -->
                 <template lwc:if={hasReference}>
