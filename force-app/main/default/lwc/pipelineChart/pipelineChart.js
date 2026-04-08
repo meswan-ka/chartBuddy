@@ -1,5 +1,4 @@
 import { LightningElement, api, wire } from 'lwc';
-import executeQuery from '@salesforce/apex/ChartQueryController.executeQuery';
 import executeQueryWithPicklistSort from '@salesforce/apex/ChartQueryController.executeQueryWithPicklistSort';
 import CURRENCY from '@salesforce/i18n/currency';
 import LOCALE from '@salesforce/i18n/locale';
@@ -18,31 +17,13 @@ export default class PipelineChart extends LightningElement {
     _error;
     _wired = false;
 
-    get usePicklistSort() {
-        return !!this.objectApiName && !!this.picklistField;
-    }
-
     @wire(executeQueryWithPicklistSort, {
         query: '$query',
         recordId: '$recordId',
         objectApiName: '$objectApiName',
         picklistFieldName: '$picklistField'
     })
-    wiredPicklistData({ error, data }) {
-        if (!this.usePicklistSort) return;
-        this._wired = true;
-        if (data) {
-            this._data = data;
-            this._error = undefined;
-        } else if (error) {
-            this._error = error;
-            this._data = [];
-        }
-    }
-
-    @wire(executeQuery, { query: '$query', recordId: '$recordId' })
     wiredData({ error, data }) {
-        if (this.usePicklistSort) return;
         this._wired = true;
         if (data) {
             this._data = data;
@@ -119,12 +100,18 @@ export default class PipelineChart extends LightningElement {
             const bottomRight = `${x2 - chevronDepth},${centerY + h / 2}`;
             const bottomLeft = `${x1},${centerY + h / 2}`;
 
+            const nextColor = i < n - 1 ? colors[i + 1] : colors[i];
+
             return {
                 key: `stage-${i}`,
                 labelKey: `label-${i}`,
                 valueKey: `value-${i}`,
+                gradKey: `grad-${i}`,
+                gradId: `pipeline-grad-${i}`,
+                gradFill: `fill: url(#pipeline-grad-${i});`,
+                gradColorStart: colors[i],
+                gradColorEnd: nextColor,
                 points: `${topLeft} ${topRight} ${chevronTop} ${chevronBottom} ${bottomRight} ${bottomLeft}`,
-                fillStyle: `fill: ${colors[i]};`,
                 label: d.label,
                 valueText: formatValue(d.value, {
                     prefix: this.resolvedPrefix,

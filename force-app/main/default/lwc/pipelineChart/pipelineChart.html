@@ -8,6 +8,18 @@
                  role="img"
                  aria-label={chartTitle}>
 
+                <!-- Gradient definitions -->
+                <defs>
+                    <template for:each={stages} for:item="stage">
+                        <linearGradient key={stage.gradKey} id={stage.gradId}
+                                        x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color={stage.gradColorStart}></stop>
+                            <stop offset="70%" stop-color={stage.gradColorStart}></stop>
+                            <stop offset="100%" stop-color={stage.gradColorEnd}></stop>
+                        </linearGradient>
+                    </template>
+                </defs>
+
                 <!-- Stage labels above shapes -->
                 <template for:each={stages} for:item="stage">
                     <text key={stage.labelKey}
@@ -18,11 +30,11 @@
                           fill="#706E6B">{stage.label}</text>
                 </template>
 
-                <!-- Trapezoid polygons -->
+                <!-- Origami polygons with gradient fill -->
                 <template for:each={stages} for:item="stage">
                     <polygon key={stage.key}
                              points={stage.points}
-                             style={stage.fillStyle}></polygon>
+                             style={stage.gradFill}></polygon>
                 </template>
 
                 <!-- Value labels inside shapes -->
