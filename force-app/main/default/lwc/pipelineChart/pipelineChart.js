@@ -87,7 +87,9 @@ export default class PipelineChart extends LightningElement {
         return data.map((d, i) => {
             const h = heights[i];
             const nextH = i < n - 1 ? heights[i + 1] : h * 0.7;
-            const x1 = i * segWidth;
+            const r = 4;
+            const overlap = i > 0 ? r : 0;
+            const x1 = i * segWidth - overlap;
             const x2 = (i + 1) * segWidth;
 
             // Pentagon vertices
@@ -98,7 +100,6 @@ export default class PipelineChart extends LightningElement {
             const br = { x: x2 - chevronDepth, y: centerY + h / 2 };
             const bl = { x: x1, y: centerY + h / 2 };
 
-            const r = 4;
             const pathD = this._roundedPentagonPath([tl, tr, ct, cb, br, bl], r);
 
             const gradId = `cb-grad-${i}`;
