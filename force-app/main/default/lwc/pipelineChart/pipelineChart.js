@@ -100,17 +100,25 @@ export default class PipelineChart extends LightningElement {
             const bottomRight = `${x2 - chevronDepth},${centerY + h / 2}`;
             const bottomLeft = `${x1},${centerY + h / 2}`;
 
-            const nextColor = i < n - 1 ? colors[i + 1] : colors[i];
+            const hasOverlay = i < n - 1;
+            const blendColor = hasOverlay ? this._lerpHex(colors[i], colors[i + 1], 0.5) : colors[i];
+            const fadeX = x2 - chevronDepth - segWidth * 0.25;
+            const overlayTL = `${fadeX},${centerY - h / 2}`;
+            const overlayTR = `${x2 - chevronDepth},${centerY - h / 2}`;
+            const overlayCT = `${x2},${centerY - nextH / 2}`;
+            const overlayCB = `${x2},${centerY + nextH / 2}`;
+            const overlayBR = `${x2 - chevronDepth},${centerY + h / 2}`;
+            const overlayBL = `${fadeX},${centerY + h / 2}`;
 
             return {
                 key: `stage-${i}`,
                 labelKey: `label-${i}`,
                 valueKey: `value-${i}`,
-                gradKey: `grad-${i}`,
-                gradId: `pipeline-grad-${i}`,
-                gradFill: `fill: url(#pipeline-grad-${i});`,
-                gradColorStart: colors[i],
-                gradColorEnd: nextColor,
+                overlayKey: `overlay-${i}`,
+                fillStyle: `fill: ${colors[i]};`,
+                hasOverlay,
+                overlayPoints: `${overlayTL} ${overlayTR} ${overlayCT} ${overlayCB} ${overlayBR} ${overlayBL}`,
+                overlayStyle: `fill: ${blendColor}; opacity: 0.45;`,
                 points: `${topLeft} ${topRight} ${chevronTop} ${chevronBottom} ${bottomRight} ${bottomLeft}`,
                 label: d.label,
                 valueText: formatValue(d.value, {
