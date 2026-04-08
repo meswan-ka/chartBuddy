@@ -21,11 +21,11 @@
                           fill="#706E6B">{stage.label}</text>
                 </template>
 
-                <!-- Origami polygons with gradient fills -->
+                <!-- Origami shapes with rounded corners and gradient fills -->
                 <template for:each={stages} for:item="stage">
-                    <polygon key={stage.key}
-                             points={stage.points}
-                             style={stage.gradientFill}></polygon>
+                    <path key={stage.key}
+                          d={stage.pathD}
+                          style={stage.gradientFill}></path>
                 </template>
 
                 <!-- Value labels inside shapes -->

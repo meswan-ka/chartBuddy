@@ -90,15 +90,16 @@ export default class PipelineChart extends LightningElement {
             const x1 = i * segWidth;
             const x2 = (i + 1) * segWidth;
 
-            // Pentagon: left edge at full height, right edge steps down
-            // with a chevron point where the next stage begins.
-            // Shape: topLeft -> topRight -> chevronPoint -> bottomRight -> bottomLeft
-            const topLeft = `${x1},${centerY - h / 2}`;
-            const topRight = `${x2 - chevronDepth},${centerY - h / 2}`;
-            const chevronTop = `${x2},${centerY - nextH / 2}`;
-            const chevronBottom = `${x2},${centerY + nextH / 2}`;
-            const bottomRight = `${x2 - chevronDepth},${centerY + h / 2}`;
-            const bottomLeft = `${x1},${centerY + h / 2}`;
+            // Pentagon vertices
+            const tl = { x: x1, y: centerY - h / 2 };
+            const tr = { x: x2 - chevronDepth, y: centerY - h / 2 };
+            const ct = { x: x2, y: centerY - nextH / 2 };
+            const cb = { x: x2, y: centerY + nextH / 2 };
+            const br = { x: x2 - chevronDepth, y: centerY + h / 2 };
+            const bl = { x: x1, y: centerY + h / 2 };
+
+            const r = 4;
+            const pathD = this._roundedPentagonPath([tl, tr, ct, cb, br, bl], r);
 
             const gradId = `cb-grad-${i}`;
             const nextColor = i < n - 1 ? colors[i + 1] : colors[i];
@@ -111,7 +112,7 @@ export default class PipelineChart extends LightningElement {
                 gradId,
                 colorStart: colors[i],
                 colorEnd: nextColor,
-                points: `${topLeft} ${topRight} ${chevronTop} ${chevronBottom} ${bottomRight} ${bottomLeft}`,
+                pathD,
                 label: d.label,
                 valueText: formatValue(d.value, {
                     prefix: this.resolvedPrefix,
@@ -159,6 +160,35 @@ export default class PipelineChart extends LightningElement {
             defs.appendChild(grad);
         }
         this._gradientsSynced = true;
+    }
+
+    _roundedPentagonPath(pts, radius) {
+        const n = pts.length;
+        const parts = [];
+        for (let i = 0; i < n; i++) {
+            const prev = pts[(i - 1 + n) % n];
+            const curr = pts[i];
+            const next = pts[(i + 1) % n];
+            const dx1 = curr.x - prev.x;
+            const dy1 = curr.y - prev.y;
+            const dx2 = next.x - curr.x;
+            const dy2 = next.y - curr.y;
+            const len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+            const len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+            const r = Math.min(radius, len1 / 2, len2 / 2);
+            const startX = curr.x - (dx1 / len1) * r;
+            const startY = curr.y - (dy1 / len1) * r;
+            const endX = curr.x + (dx2 / len2) * r;
+            const endY = curr.y + (dy2 / len2) * r;
+            if (i === 0) {
+                parts.push(`M ${startX} ${startY}`);
+            } else {
+                parts.push(`L ${startX} ${startY}`);
+            }
+            parts.push(`Q ${curr.x} ${curr.y} ${endX} ${endY}`);
+        }
+        parts.push('Z');
+        return parts.join(' ');
     }
 
     _interpolateColors(count) {
