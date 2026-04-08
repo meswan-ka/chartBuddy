@@ -304,25 +304,27 @@ chartBuddy/
   sfdx-project.json
   .forceignore
   force-app/main/default/
+    objects/
+      Chart_Buddy_Config__c/            Config storage object
+        fields/
+          Config_JSON__c                131KB JSON config field
+          Description__c                Config description
     classes/
-      ChartQueryController.cls          Apex query executor
-      ChartQueryController.cls-meta.xml
-      ChartQueryControllerTest.cls      Test class (90%+ coverage)
-      ChartQueryControllerTest.cls-meta.xml
+      ChartQueryController              Query executor (3 methods)
+      ChartBuddyConfigController        Config CRUD
+      ChartBuddyConfigPicklist          App Builder datasource
+      *Test classes*
     lwc/
-      chartUtils/
-        chartUtils.js                   Shared colors, formatting, math
-      barChart/
-        barChart.html                   SVG template
-        barChart.js                     Component logic
-        barChart.css                    Host styles
-        barChart.js-meta.xml            App Builder config
-      lineChart/                        (same 4-file pattern)
-      flatGauge/
-      polarGauge/
-      ratingsChart/
-      pipelineChart/
-      waterfallChart/
+      chartUtils/                       Shared colors, formatting, math
+      chartBuddyConfigurator/           Builder UI (admin tool)
+      chartBuddyContainer/             Runtime dashboard container
+      barChart/                         Bar / Column chart
+      lineChart/                        Line / Area chart
+      flatGauge/                        Horizontal gauge
+      polarGauge/                       Circular gauge
+      ratingsChart/                     Dot-based rating
+      pipelineChart/                    Origami funnel
+      waterfallChart/                   Waterfall chart
 ```
 
 ---
@@ -334,6 +336,121 @@ chartBuddy/
 - **Composable queries over hardcoded data**: Every chart accepts a SOQL string as a design attribute. Admins wire up data without writing code.
 - **Locale-aware currency**: `@salesforce/i18n/currency` + `Intl.NumberFormat` resolves the correct symbol per user. No per-locale configuration.
 - **Single Apex controller**: Three methods cover all chart data patterns (aggregate, raw, single-value). `with sharing` enforced.
+
+---
+
+## Dashboard Container
+
+### Overview
+
+The **chartBuddyContainer** and **chartBuddyConfigurator** components let admins build multi-chart dashboards without code. Configure up to 12 chart columns side-by-side, each with its own chart type, query, and settings.
+
+### How It Works
+
+1. Drop `c-chart-buddy-configurator` onto an App Page
+2. Create a new config: name it, set a dashboard title
+3. Add columns -- pick chart type, set width (1-12 grid columns), configure the query and chart-specific settings
+4. Save the config
+5. Drop `c-chart-buddy-container` onto any Record Page or App Page
+6. Select the saved config from the picklist
+7. The container renders all configured charts in a responsive grid
+
+### Configurator (Builder)
+
+Two-panel layout:
+
+| Panel | Purpose |
+|-------|---------|
+| Left (60%) | Config management, column add/remove/reorder, chart type selection, per-type settings |
+| Right (40%) | Visual grid preview showing column widths and chart types |
+
+**Column operations:**
+- Add Column (up to 12)
+- Remove Column
+- Move Up / Move Down (reorder)
+- Expand/collapse each column's settings
+- Chart type selector (all 7 types)
+- Width selector (1-12 grid units)
+- Chart-specific config fields rendered dynamically based on type
+
+**Config persistence:**
+- Configs stored in `Chart_Buddy_Config__c` custom object
+- Full dashboard JSON serialized to `Config_JSON__c` (131KB LongTextArea)
+- Save / Load / Clone / Delete operations
+- `ChartBuddyConfigPicklist` provides App Builder datasource
+
+### Container (Runtime)
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `configName` | String | Name of saved config (picklist in App Builder) |
+| `recordId` | String | Auto-injected on record pages, passed to all child charts |
+
+The container:
+1. Loads the named config from `Chart_Buddy_Config__c`
+2. Parses the JSON into column definitions
+3. Renders a `lightning-layout` with one `lightning-layout-item` per column
+4. Each item dynamically renders the correct chart component with all configured props
+5. `recordId` is forwarded to every child chart for `:recordId` query binding
+
+### Config JSON Structure
+
+```json
+{
+  "containerTitle": "Account Analytics Dashboard",
+  "columns": [
+    {
+      "id": "col-1",
+      "chartType": "barChart",
+      "width": 6,
+      "config": {
+        "chartTitle": "Opportunities by Stage",
+        "query": "SELECT StageName, SUM(Amount) total FROM Opportunity WHERE AccountId = :recordId GROUP BY StageName",
+        "labelField": "StageName",
+        "valueField": "total",
+        "orientation": "vertical",
+        "variant": "simple",
+        "valuePrefix": "$",
+        "valueSuffix": "",
+        "height": 300
+      }
+    },
+    {
+      "id": "col-2",
+      "chartType": "polarGauge",
+      "width": 3,
+      "config": {
+        "chartTitle": "Win Rate",
+        "query": "SELECT (COUNT(CASE WHEN IsWon = true THEN Id END) * 100 / COUNT(Id)) rate FROM Opportunity WHERE AccountId = :recordId",
+        "maxValue": 100,
+        "valueSuffix": "%"
+      }
+    },
+    {
+      "id": "col-3",
+      "chartType": "flatGauge",
+      "width": 3,
+      "config": {
+        "chartTitle": "Quota Attainment",
+        "query": "SELECT SUM(Amount) FROM Opportunity WHERE AccountId = :recordId AND IsWon = true",
+        "maxValue": 500000,
+        "referenceValue": 350000,
+        "referenceLabel": "Avg",
+        "valuePrefix": "$",
+        "valueSuffix": ""
+      }
+    }
+  ]
+}
+```
+
+### Example: Three-Column Account Dashboard
+
+| Column | Width | Chart Type | Shows |
+|--------|-------|------------|-------|
+| 1 | 6/12 | Bar Chart | Opportunities by stage |
+| 2 | 3/12 | Polar Gauge | Win rate percentage |
+| 3 | 3/12 | Flat Gauge | Quota attainment with average reference |
 
 ---
 
