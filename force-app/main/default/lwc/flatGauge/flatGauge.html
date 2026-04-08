@@ -1,6 +1,6 @@
 <template>
     <div class="gauge-container">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 70" class="gauge-svg">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 85" class="gauge-svg">
             <defs lwc:dom="manual" class="gauge-defs"></defs>
             <template lwc:if={hasData}>
                 <!-- Title -->
@@ -30,6 +30,20 @@
                 <text x={valueLabelX} y={valueLabelY} class="gauge-value" fill={titleColor}>
                     {valueText}
                 </text>
+
+                <!-- Target context: "of $500K" -->
+                <template lwc:if={targetText}>
+                    <text x={valueLabelX} y={targetLabelY} class="gauge-target" fill={axisTextColor}>
+                        {targetText}
+                    </text>
+                </template>
+
+                <!-- Variance indicator -->
+                <template lwc:if={hasVariance}>
+                    <text x={varianceX} y={varianceLabelY} class="gauge-variance" fill={varianceColor}>
+                        {varianceText}
+                    </text>
+                </template>
 
                 <!-- Reference line -->
                 <template lwc:if={hasReference}>

@@ -152,6 +152,51 @@ export default class FlatGauge extends LightningElement {
         return BAR_Y + BAR_HEIGHT / 2 + 6;
     }
 
+    get targetText() {
+        const target = this.hasReference ? this.referenceValue : this.maxValue;
+        if (!target) return '';
+        const formatted = formatValue(Number(target), {
+            prefix: this.resolvedPrefix,
+            suffix: this.valueSuffix || '',
+            abbreviate: true
+        });
+        return `of ${formatted}`;
+    }
+
+    get targetLabelY() {
+        return BAR_Y + BAR_HEIGHT / 2 + 20;
+    }
+
+    get hasVariance() {
+        if (!this.hasData) return false;
+        const target = this.hasReference ? Number(this.referenceValue) : Number(this.maxValue);
+        return target > 0;
+    }
+
+    get _variancePct() {
+        const target = this.hasReference ? Number(this.referenceValue) : Number(this.maxValue);
+        if (!target) return 0;
+        return Math.round(((this.rawValue - target) / target) * 100);
+    }
+
+    get varianceText() {
+        const pct = this._variancePct;
+        const arrow = pct >= 0 ? '\u25B2' : '\u25BC';
+        return `${arrow} ${Math.abs(pct)}%`;
+    }
+
+    get varianceColor() {
+        return this._variancePct >= 0 ? COLORS.positive : COLORS.negative;
+    }
+
+    get varianceX() {
+        return BAR_RIGHT + 10;
+    }
+
+    get varianceLabelY() {
+        return BAR_Y + BAR_HEIGHT / 2 + 33;
+    }
+
     get hasReference() {
         return (
             this.referenceValue !== undefined &&
