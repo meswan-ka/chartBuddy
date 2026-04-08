@@ -27,7 +27,14 @@ export default class LineChart extends LightningElement {
     @api labelField;
     @api valueField;
     @api secondaryValueField;
-    @api showArea = true;
+    _showAreaDefault = true;
+    @api
+    get showArea() {
+        return this._showAreaDefault;
+    }
+    set showArea(value) {
+        this._showAreaDefault = value !== false && value !== 'false';
+    }
     @api valuePrefix = '';
     @api valueSuffix = '';
     @api secondaryPrefix = '';

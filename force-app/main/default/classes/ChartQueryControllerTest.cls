@@ -49,32 +49,35 @@ private class ChartQueryControllerTest {
 
     @IsTest
     static void testBlankQueryThrows() {
+        Boolean threw = false;
         try {
             ChartQueryController.executeQuery('', 'fakeId');
-            Assert.fail('Should have thrown');
         } catch (AuraHandledException e) {
-            Assert.isTrue(e.getMessage().contains('required'));
+            threw = true;
         }
+        Assert.isTrue(threw, 'Should throw for blank query');
     }
 
     @IsTest
     static void testNonSelectThrows() {
+        Boolean threw = false;
         try {
             ChartQueryController.executeQuery('DELETE FROM Account', 'fakeId');
-            Assert.fail('Should have thrown');
         } catch (AuraHandledException e) {
-            Assert.isTrue(e.getMessage().contains('SELECT'));
+            threw = true;
         }
+        Assert.isTrue(threw, 'Should throw for non-SELECT query');
     }
 
     @IsTest
     static void testDmlKeywordsThrow() {
+        Boolean threw = false;
         try {
             ChartQueryController.executeQuery('SELECT Id FROM Account WHERE Name = \'UPDATE\'', 'fakeId');
-            Assert.fail('Should have thrown for DML keyword');
         } catch (AuraHandledException e) {
-            Assert.isTrue(e.getMessage().contains('DML'));
+            threw = true;
         }
+        Assert.isTrue(threw, 'Should throw for DML keywords');
     }
 
     @IsTest

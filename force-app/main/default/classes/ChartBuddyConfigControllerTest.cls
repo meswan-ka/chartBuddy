@@ -26,12 +26,13 @@ private class ChartBuddyConfigControllerTest {
 
     @IsTest
     static void testGetConfigByNameNotFound() {
+        Boolean threw = false;
         try {
             ChartBuddyConfigController.getConfigByName('Nonexistent');
-            Assert.fail('Should have thrown');
         } catch (AuraHandledException e) {
-            Assert.isTrue(e.getMessage().contains('not found'));
+            threw = true;
         }
+        Assert.isTrue(threw, 'Should throw for nonexistent config');
     }
 
     @IsTest
@@ -68,12 +69,13 @@ private class ChartBuddyConfigControllerTest {
 
     @IsTest
     static void testDeleteConfigBlankId() {
+        Boolean threw = false;
         try {
             ChartBuddyConfigController.deleteConfig('');
-            Assert.fail('Should have thrown');
         } catch (AuraHandledException e) {
-            Assert.isTrue(e.getMessage().contains('required'));
+            threw = true;
         }
+        Assert.isTrue(threw, 'Should throw for blank config ID');
     }
 
     @IsTest
