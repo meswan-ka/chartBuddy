@@ -88,7 +88,7 @@ export default class PipelineChart extends LightningElement {
             const h = heights[i];
             const nextH = i < n - 1 ? heights[i + 1] : h * 0.7;
             const r = 4;
-            const overlap = i > 0 ? r : 0;
+            const overlap = i > 0 ? r / 2 : 0;
             const x1 = i * segWidth - overlap;
             const x2 = (i + 1) * segWidth;
 
