@@ -8,6 +8,9 @@
                  role="img"
                  aria-label={chartTitle}>
 
+                <!-- Gradients injected programmatically to avoid shadow DOM id mangling -->
+                <defs lwc:dom="manual" class="gradient-defs"></defs>
+
                 <!-- Stage labels above shapes -->
                 <template for:each={stages} for:item="stage">
                     <text key={stage.labelKey}
@@ -18,11 +21,11 @@
                           fill="#706E6B">{stage.label}</text>
                 </template>
 
-                <!-- Base origami polygons -->
+                <!-- Origami polygons with gradient fills -->
                 <template for:each={stages} for:item="stage">
                     <polygon key={stage.key}
                              points={stage.points}
-                             style={stage.fillStyle}></polygon>
+                             style={stage.gradientFill}></polygon>
                 </template>
 
                 <!-- Value labels inside shapes -->

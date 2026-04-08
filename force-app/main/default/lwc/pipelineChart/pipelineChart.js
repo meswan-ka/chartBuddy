@@ -100,11 +100,17 @@ export default class PipelineChart extends LightningElement {
             const bottomRight = `${x2 - chevronDepth},${centerY + h / 2}`;
             const bottomLeft = `${x1},${centerY + h / 2}`;
 
+            const gradId = `cb-grad-${i}`;
+            const nextColor = i < n - 1 ? colors[i + 1] : colors[i];
+
             return {
                 key: `stage-${i}`,
                 labelKey: `label-${i}`,
                 valueKey: `value-${i}`,
-                fillStyle: `fill: ${colors[i]};`,
+                gradientFill: `fill: url(#${gradId});`,
+                gradId,
+                colorStart: colors[i],
+                colorEnd: nextColor,
                 points: `${topLeft} ${topRight} ${chevronTop} ${chevronBottom} ${bottomRight} ${bottomLeft}`,
                 label: d.label,
                 valueText: formatValue(d.value, {
@@ -117,6 +123,42 @@ export default class PipelineChart extends LightningElement {
                 valueY: centerY
             };
         });
+    }
+
+    _gradientsSynced = false;
+
+    renderedCallback() {
+        if (!this._gradientsSynced && this.hasData) {
+            this._syncGradients();
+        }
+    }
+
+    _syncGradients() {
+        const defs = this.template.querySelector('.gradient-defs');
+        if (!defs) return;
+        while (defs.firstChild) {
+            defs.removeChild(defs.firstChild);
+        }
+        const ns = 'http://www.w3.org/2000/svg';
+        const stages = this.stages;
+        for (const stage of stages) {
+            const grad = document.createElementNS(ns, 'linearGradient');
+            grad.setAttribute('id', stage.gradId);
+            grad.setAttribute('x1', '0');
+            grad.setAttribute('y1', '0');
+            grad.setAttribute('x2', '1');
+            grad.setAttribute('y2', '0');
+            const stop1 = document.createElementNS(ns, 'stop');
+            stop1.setAttribute('offset', '60%');
+            stop1.setAttribute('stop-color', stage.colorStart);
+            const stop2 = document.createElementNS(ns, 'stop');
+            stop2.setAttribute('offset', '100%');
+            stop2.setAttribute('stop-color', stage.colorEnd);
+            grad.appendChild(stop1);
+            grad.appendChild(stop2);
+            defs.appendChild(grad);
+        }
+        this._gradientsSynced = true;
     }
 
     _interpolateColors(count) {
