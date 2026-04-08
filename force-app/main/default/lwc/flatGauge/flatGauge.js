@@ -157,11 +157,12 @@ export default class FlatGauge extends LightningElement {
     }
 
     get superscriptX() {
-        return BAR_RIGHT + 10;
+        const charCount = this.valueText.length;
+        return BAR_RIGHT + 12 + charCount * 10;
     }
 
     get superscriptY() {
-        return BAR_Y + 4;
+        return BAR_Y + BAR_HEIGHT / 2 + 2;
     }
 
     get targetText() {
