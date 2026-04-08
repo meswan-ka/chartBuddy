@@ -25,12 +25,17 @@
                              style={stage.fillStyle}></polygon>
                 </template>
 
-                <!-- Fade overlay on right edge blending into next color -->
+                <!-- Gradient slices on right edge blending into next color -->
                 <template for:each={stages} for:item="stage">
-                    <template lwc:if={stage.hasOverlay}>
-                        <polygon key={stage.overlayKey}
-                                 points={stage.overlayPoints}
-                                 style={stage.overlayStyle}></polygon>
+                    <template lwc:if={stage.hasSlices}>
+                        <template for:each={stage.slices} for:item="slice">
+                            <rect key={slice.key}
+                                  x={slice.x}
+                                  y={slice.y}
+                                  width={slice.width}
+                                  height={slice.height}
+                                  style={slice.style}></rect>
+                        </template>
                     </template>
                 </template>
 

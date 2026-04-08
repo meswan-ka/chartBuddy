@@ -100,25 +100,35 @@ export default class PipelineChart extends LightningElement {
             const bottomRight = `${x2 - chevronDepth},${centerY + h / 2}`;
             const bottomLeft = `${x1},${centerY + h / 2}`;
 
-            const hasOverlay = i < n - 1;
-            const blendColor = hasOverlay ? this._lerpHex(colors[i], colors[i + 1], 0.5) : colors[i];
-            const fadeX = x2 - chevronDepth - segWidth * 0.25;
-            const overlayTL = `${fadeX},${centerY - h / 2}`;
-            const overlayTR = `${x2 - chevronDepth},${centerY - h / 2}`;
-            const overlayCT = `${x2},${centerY - nextH / 2}`;
-            const overlayCB = `${x2},${centerY + nextH / 2}`;
-            const overlayBR = `${x2 - chevronDepth},${centerY + h / 2}`;
-            const overlayBL = `${fadeX},${centerY + h / 2}`;
+            const slices = [];
+            if (i < n - 1) {
+                const sliceCount = 8;
+                const fadeStart = x1 + segWidth * 0.6;
+                const fadeEnd = x2 - chevronDepth;
+                const fadeWidth = fadeEnd - fadeStart;
+                for (let s = 0; s < sliceCount; s++) {
+                    const t = (s + 1) / sliceCount;
+                    const sx = fadeStart + (fadeWidth * s) / sliceCount;
+                    const sw = fadeWidth / sliceCount + 0.5;
+                    const sliceColor = this._lerpHex(colors[i], colors[i + 1], t * 0.6);
+                    slices.push({
+                        key: `slice-${i}-${s}`,
+                        x: sx,
+                        y: centerY - h / 2,
+                        width: sw,
+                        height: h,
+                        style: `fill: ${sliceColor};`
+                    });
+                }
+            }
 
             return {
                 key: `stage-${i}`,
                 labelKey: `label-${i}`,
                 valueKey: `value-${i}`,
-                overlayKey: `overlay-${i}`,
                 fillStyle: `fill: ${colors[i]};`,
-                hasOverlay,
-                overlayPoints: `${overlayTL} ${overlayTR} ${overlayCT} ${overlayCB} ${overlayBR} ${overlayBL}`,
-                overlayStyle: `fill: ${blendColor}; opacity: 0.45;`,
+                slices,
+                hasSlices: slices.length > 0,
                 points: `${topLeft} ${topRight} ${chevronTop} ${chevronBottom} ${bottomRight} ${bottomLeft}`,
                 label: d.label,
                 valueText: formatValue(d.value, {
