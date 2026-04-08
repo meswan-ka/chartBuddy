@@ -1,0 +1,8 @@
+:host {
+    display: block;
+}
+
+.error-text {
+    color: var(--slds-g-color-error-base-40, #ea001e);
+    font-size: var(--slds-g-font-scale-neg-x-small, 0.75rem);
+}

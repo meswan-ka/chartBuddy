@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Chart Buddy Container</masterLabel>
+    <description>Runtime container that loads a saved dashboard configuration and renders chart components in a responsive grid layout.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage">
+            <property name="configName" type="String" label="Dashboard Configuration" datasource="apex://ChartBuddyConfigPicklist" description="Name of the Chart Buddy configuration record to load" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

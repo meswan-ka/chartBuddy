@@ -1,0 +1,493 @@
+<template>
+    <lightning-card title="Chart Buddy Configurator" icon-name="utility:settings">
+        <div class="configurator-container slds-p-around_medium">
+            <!-- LEFT PANEL -->
+            <div class="config-panel">
+                <!-- Config Management -->
+                <div class="slds-m-bottom_medium">
+                    <lightning-combobox
+                        label="Select Configuration"
+                        value={configId}
+                        options={configOptions}
+                        placeholder="-- New Configuration --"
+                        onchange={handleConfigSelect}
+                    ></lightning-combobox>
+                </div>
+
+                <div class="slds-grid slds-gutters slds-m-bottom_small">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input
+                            label="Config Name"
+                            value={configName}
+                            onchange={handleConfigNameChange}
+                            required
+                        ></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input
+                            label="Container Title"
+                            value={containerTitle}
+                            onchange={handleContainerTitleChange}
+                        ></lightning-input>
+                    </div>
+                </div>
+
+                <div class="slds-m-bottom_small">
+                    <lightning-input
+                        label="Description"
+                        value={description}
+                        onchange={handleDescriptionChange}
+                    ></lightning-input>
+                </div>
+
+                <div class="slds-m-bottom_medium button-row">
+                    <lightning-button
+                        label="New"
+                        variant="neutral"
+                        icon-name="utility:add"
+                        onclick={handleNew}
+                    ></lightning-button>
+                    <lightning-button
+                        label="Save"
+                        variant="brand"
+                        icon-name="utility:save"
+                        onclick={handleSave}
+                        disabled={isSaveDisabled}
+                    ></lightning-button>
+                    <lightning-button
+                        label="Clone"
+                        variant="neutral"
+                        icon-name="utility:copy"
+                        onclick={handleClone}
+                        disabled={isCloneDisabled}
+                    ></lightning-button>
+                    <lightning-button
+                        label="Delete"
+                        variant="destructive"
+                        icon-name="utility:delete"
+                        onclick={handleDelete}
+                        disabled={isDeleteDisabled}
+                    ></lightning-button>
+                </div>
+
+                <hr class="slds-m-bottom_medium" />
+
+                <!-- Columns Section -->
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_small">
+                    <h2 class="slds-text-heading_small">
+                        Chart Columns ({columnCount}/12)
+                    </h2>
+                    <lightning-button
+                        label="Add Column"
+                        variant="brand"
+                        icon-name="utility:add"
+                        onclick={handleAddColumn}
+                        disabled={isAddColumnDisabled}
+                    ></lightning-button>
+                </div>
+
+                <template if:true={hasNoColumns}>
+                    <div class="slds-align_absolute-center slds-p-around_large slds-text-color_weak">
+                        No columns added. Click "Add Column" to get started.
+                    </div>
+                </template>
+
+                <template for:each={renderedColumns} for:item="col">
+                    <div key={col.id} class="column-card slds-m-bottom_small">
+                        <!-- Column Header -->
+                        <div class="column-header">
+                            <lightning-icon
+                                icon-name="utility:drag_and_drop"
+                                size="x-small"
+                                class="drag-handle"
+                                alternative-text="Drag"
+                            ></lightning-icon>
+                            <lightning-badge label={col.columnLabel} class="slds-m-horizontal_xx-small"></lightning-badge>
+                            <span class="slds-m-horizontal_xx-small column-type-label">{col.chartTypeLabel}</span>
+                            <lightning-badge label={col.widthLabel} class="slds-m-horizontal_xx-small"></lightning-badge>
+                            <div class="column-actions">
+                                <lightning-button-icon
+                                    icon-name="utility:up"
+                                    alternative-text="Move Up"
+                                    data-id={col.id}
+                                    onclick={handleMoveUp}
+                                    disabled={col.isFirst}
+                                    size="small"
+                                ></lightning-button-icon>
+                                <lightning-button-icon
+                                    icon-name="utility:down"
+                                    alternative-text="Move Down"
+                                    data-id={col.id}
+                                    onclick={handleMoveDown}
+                                    disabled={col.isLast}
+                                    size="small"
+                                ></lightning-button-icon>
+                                <lightning-button-icon
+                                    icon-name={col.expandIcon}
+                                    alternative-text="Toggle"
+                                    data-id={col.id}
+                                    onclick={handleToggleExpand}
+                                    size="small"
+                                ></lightning-button-icon>
+                                <lightning-button-icon
+                                    icon-name="utility:delete"
+                                    alternative-text="Remove"
+                                    data-id={col.id}
+                                    onclick={handleRemoveColumn}
+                                    variant="bare"
+                                    size="small"
+                                    class="remove-btn"
+                                ></lightning-button-icon>
+                            </div>
+                        </div>
+
+                        <!-- Column Detail -->
+                        <template lwc:if={col.isExpanded}>
+                            <div class="column-detail">
+                                <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-combobox
+                                            label="Chart Type"
+                                            value={col.chartType}
+                                            options={chartTypeOptions}
+                                            data-id={col.id}
+                                            data-field="chartType"
+                                            onchange={handleColumnTopLevelChange}
+                                        ></lightning-combobox>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning-combobox
+                                            label="Width (columns)"
+                                            value={col.widthStr}
+                                            options={widthOptions}
+                                            data-id={col.id}
+                                            data-field="width"
+                                            onchange={handleColumnTopLevelChange}
+                                        ></lightning-combobox>
+                                    </div>
+                                </div>
+
+                                <!-- Common fields -->
+                                <lightning-input
+                                    label="Chart Title"
+                                    value={col.config.chartTitle}
+                                    data-id={col.id}
+                                    data-field="chartTitle"
+                                    onchange={handleColumnConfigChange}
+                                    class="slds-m-bottom_small"
+                                ></lightning-input>
+
+                                <lightning-textarea
+                                    label="Query"
+                                    value={col.config.query}
+                                    data-id={col.id}
+                                    data-field="query"
+                                    onchange={handleColumnConfigChange}
+                                    class="slds-m-bottom_small"
+                                    field-level-help="Use :recordId for current record binding"
+                                ></lightning-textarea>
+
+                                <!-- barChart fields -->
+                                <template lwc:if={col.isBarChart}>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                label="Label Field"
+                                                value={col.config.labelField}
+                                                data-id={col.id}
+                                                data-field="labelField"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                label="Value Field"
+                                                value={col.config.valueField}
+                                                data-id={col.id}
+                                                data-field="valueField"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                label="Series Field"
+                                                value={col.config.seriesField}
+                                                data-id={col.id}
+                                                data-field="seriesField"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-combobox
+                                                label="Orientation"
+                                                value={col.config.orientation}
+                                                options={orientationOptions}
+                                                data-id={col.id}
+                                                data-field="orientation"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-combobox>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-combobox
+                                                label="Variant"
+                                                value={col.config.variant}
+                                                options={variantOptions}
+                                                data-id={col.id}
+                                                data-field="variant"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-combobox>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- lineChart fields -->
+                                <template lwc:if={col.isLineChart}>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                label="Label Field"
+                                                value={col.config.labelField}
+                                                data-id={col.id}
+                                                data-field="labelField"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                label="Value Field"
+                                                value={col.config.valueField}
+                                                data-id={col.id}
+                                                data-field="valueField"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                label="Secondary Value Field"
+                                                value={col.config.secondaryValueField}
+                                                data-id={col.id}
+                                                data-field="secondaryValueField"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Show Area"
+                                        checked={col.config.showArea}
+                                        data-id={col.id}
+                                        data-field="showArea"
+                                        onchange={handleColumnCheckboxChange}
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input
+                                                label="Secondary Prefix"
+                                                value={col.config.secondaryPrefix}
+                                                data-id={col.id}
+                                                data-field="secondaryPrefix"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input
+                                                label="Secondary Suffix"
+                                                value={col.config.secondarySuffix}
+                                                data-id={col.id}
+                                                data-field="secondarySuffix"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- flatGauge fields -->
+                                <template lwc:if={col.isFlatGauge}>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                type="number"
+                                                label="Max Value"
+                                                value={col.config.maxValue}
+                                                data-id={col.id}
+                                                data-field="maxValue"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                type="number"
+                                                label="Reference Value"
+                                                value={col.config.referenceValue}
+                                                data-id={col.id}
+                                                data-field="referenceValue"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input
+                                                label="Reference Label"
+                                                value={col.config.referenceLabel}
+                                                data-id={col.id}
+                                                data-field="referenceLabel"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- polarGauge fields -->
+                                <template lwc:if={col.isPolarGauge}>
+                                    <lightning-input
+                                        type="number"
+                                        label="Max Value"
+                                        value={col.config.maxValue}
+                                        data-id={col.id}
+                                        data-field="maxValue"
+                                        onchange={handleColumnConfigChange}
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                </template>
+
+                                <!-- ratingsChart fields -->
+                                <template lwc:if={col.isRatingsChart}>
+                                    <lightning-input
+                                        type="number"
+                                        label="Max Dots"
+                                        value={col.config.maxDots}
+                                        data-id={col.id}
+                                        data-field="maxDots"
+                                        onchange={handleColumnConfigChange}
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                </template>
+
+                                <!-- waterfallChart fields -->
+                                <template lwc:if={col.isWaterfallChart}>
+                                    <lightning-combobox
+                                        label="Mode"
+                                        value={col.config.mode}
+                                        options={waterfallModeOptions}
+                                        data-id={col.id}
+                                        data-field="mode"
+                                        onchange={handleColumnConfigChange}
+                                        class="slds-m-bottom_small"
+                                    ></lightning-combobox>
+                                </template>
+
+                                <!-- Shared: Value Prefix/Suffix -->
+                                <template lwc:if={col.showValuePrefix}>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input
+                                                label="Value Prefix"
+                                                value={col.config.valuePrefix}
+                                                data-id={col.id}
+                                                data-field="valuePrefix"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </div>
+                                        <template lwc:if={col.showValueSuffix}>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <lightning-input
+                                                    label="Value Suffix"
+                                                    value={col.config.valueSuffix}
+                                                    data-id={col.id}
+                                                    data-field="valueSuffix"
+                                                    onchange={handleColumnConfigChange}
+                                                ></lightning-input>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                <!-- Value Suffix only (polarGauge has no prefix) -->
+                                <template lwc:if={col.showValueSuffixOnly}>
+                                    <lightning-input
+                                        label="Value Suffix"
+                                        value={col.config.valueSuffix}
+                                        data-id={col.id}
+                                        data-field="valueSuffix"
+                                        onchange={handleColumnConfigChange}
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                </template>
+
+                                <!-- Height field -->
+                                <template lwc:if={col.showHeightField}>
+                                    <lightning-input
+                                        type="number"
+                                        label="Height (px)"
+                                        value={col.config.height}
+                                        data-id={col.id}
+                                        data-field="height"
+                                        onchange={handleColumnConfigChange}
+                                        class="slds-m-bottom_small"
+                                        min="100"
+                                        max="800"
+                                    ></lightning-input>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="preview-panel">
+                <h3 class="slds-text-heading_small slds-m-bottom_small">Preview</h3>
+                <lightning-input
+                    label="Context Record ID"
+                    value={contextRecordId}
+                    onchange={handleContextRecordIdChange}
+                    class="slds-m-bottom_medium"
+                    placeholder="Paste a record ID for testing"
+                ></lightning-input>
+
+                <template lwc:if={containerTitle}>
+                    <h2 class="slds-text-heading_medium slds-m-bottom_small preview-title">{containerTitle}</h2>
+                </template>
+
+                <template lwc:if={hasNoColumns}>
+                    <div class="preview-empty slds-align_absolute-center slds-p-around_large slds-text-color_weak">
+                        Add columns to see layout preview
+                    </div>
+                </template>
+
+                <template lwc:if={hasColumns}>
+                    <lightning-layout multiple-rows>
+                        <template for:each={renderedColumns} for:item="col">
+                            <lightning-layout-item key={col.id} size={col.width} padding="around-small">
+                                <div class="preview-card">
+                                    <lightning-icon
+                                        icon-name={col.iconName}
+                                        size="small"
+                                        class="slds-m-right_x-small"
+                                    ></lightning-icon>
+                                    <div class="preview-card-text">
+                                        <span class="preview-card-title">{col.config.chartTitle}</span>
+                                        <span class="type-badge">{col.chartTypeLabel}</span>
+                                    </div>
+                                </div>
+                            </lightning-layout-item>
+                        </template>
+                    </lightning-layout>
+                </template>
+
+                <template lwc:if={hasColumns}>
+                    <div class="slds-m-top_medium">
+                        <lightning-textarea
+                            label="Config JSON (read-only)"
+                            value={configJsonPreview}
+                            readonly
+                            class="json-preview"
+                        ></lightning-textarea>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,112 @@
+<template>
+    <lightning-card title={containerTitle} icon-name="utility:chart">
+        <template lwc:if={isLoading}>
+            <div class="slds-is-relative slds-p-around_large">
+                <lightning-spinner alternative-text="Loading dashboard configuration"></lightning-spinner>
+            </div>
+        </template>
+        <template lwc:if={errorMessage}>
+            <div class="slds-p-around_medium">
+                <p class="error-text">{errorMessage}</p>
+            </div>
+        </template>
+        <template lwc:if={hasColumns}>
+            <div class="slds-p-around_small">
+                <lightning-layout multiple-rows>
+                    <template for:each={columns} for:item="col">
+                        <lightning-layout-item key={col.id} size={col.width} padding="around-small">
+
+                            <template lwc:if={col.isBarChart}>
+                                <c-bar-chart
+                                    chart-title={col.config.chartTitle}
+                                    query={col.config.query}
+                                    label-field={col.config.labelField}
+                                    value-field={col.config.valueField}
+                                    series-field={col.config.seriesField}
+                                    orientation={col.config.orientation}
+                                    variant={col.config.variant}
+                                    value-prefix={col.config.valuePrefix}
+                                    value-suffix={col.config.valueSuffix}
+                                    height={col.config.height}
+                                    record-id={recordId}>
+                                </c-bar-chart>
+                            </template>
+
+                            <template lwc:if={col.isLineChart}>
+                                <c-line-chart
+                                    chart-title={col.config.chartTitle}
+                                    query={col.config.query}
+                                    label-field={col.config.labelField}
+                                    value-field={col.config.valueField}
+                                    secondary-value-field={col.config.secondaryValueField}
+                                    show-area={col.config.showArea}
+                                    value-prefix={col.config.valuePrefix}
+                                    value-suffix={col.config.valueSuffix}
+                                    secondary-prefix={col.config.secondaryPrefix}
+                                    secondary-suffix={col.config.secondarySuffix}
+                                    height={col.config.height}
+                                    record-id={recordId}>
+                                </c-line-chart>
+                            </template>
+
+                            <template lwc:if={col.isFlatGauge}>
+                                <c-flat-gauge
+                                    chart-title={col.config.chartTitle}
+                                    query={col.config.query}
+                                    max-value={col.config.maxValue}
+                                    reference-value={col.config.referenceValue}
+                                    reference-label={col.config.referenceLabel}
+                                    value-prefix={col.config.valuePrefix}
+                                    value-suffix={col.config.valueSuffix}
+                                    record-id={recordId}>
+                                </c-flat-gauge>
+                            </template>
+
+                            <template lwc:if={col.isPolarGauge}>
+                                <c-polar-gauge
+                                    chart-title={col.config.chartTitle}
+                                    query={col.config.query}
+                                    max-value={col.config.maxValue}
+                                    value-suffix={col.config.valueSuffix}
+                                    record-id={recordId}>
+                                </c-polar-gauge>
+                            </template>
+
+                            <template lwc:if={col.isRatingsChart}>
+                                <c-ratings-chart
+                                    chart-title={col.config.chartTitle}
+                                    query={col.config.query}
+                                    max-dots={col.config.maxDots}
+                                    record-id={recordId}>
+                                </c-ratings-chart>
+                            </template>
+
+                            <template lwc:if={col.isPipelineChart}>
+                                <c-pipeline-chart
+                                    chart-title={col.config.chartTitle}
+                                    query={col.config.query}
+                                    value-prefix={col.config.valuePrefix}
+                                    value-suffix={col.config.valueSuffix}
+                                    record-id={recordId}>
+                                </c-pipeline-chart>
+                            </template>
+
+                            <template lwc:if={col.isWaterfallChart}>
+                                <c-waterfall-chart
+                                    chart-title={col.config.chartTitle}
+                                    query={col.config.query}
+                                    mode={col.config.mode}
+                                    value-prefix={col.config.valuePrefix}
+                                    value-suffix={col.config.valueSuffix}
+                                    height={col.config.height}
+                                    record-id={recordId}>
+                                </c-waterfall-chart>
+                            </template>
+
+                        </lightning-layout-item>
+                    </template>
+                </lightning-layout>
+            </div>
+        </template>
+    </lightning-card>
+</template>
