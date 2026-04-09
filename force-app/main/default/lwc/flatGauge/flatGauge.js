@@ -5,7 +5,7 @@ import LOCALE from '@salesforce/i18n/locale';
 import { COLORS, formatValue, clamp, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
 
 const BAR_LEFT = 20;
-const BAR_RIGHT = 300;
+const BAR_RIGHT = 400;
 const BAR_WIDTH = BAR_RIGHT - BAR_LEFT;
 const BAR_Y = 24;
 const BAR_HEIGHT = 24;
@@ -208,6 +208,15 @@ export default class FlatGauge extends LightningElement {
 
     get varianceLabelY() {
         return BAR_Y + BAR_HEIGHT / 2 + 33;
+    }
+
+    get referenceValueText() {
+        if (!this.hasReference) return '';
+        return formatValue(Number(this.referenceValue), {
+            prefix: this.resolvedPrefix,
+            suffix: this.valueSuffix || '',
+            abbreviate: true
+        });
     }
 
     get hasReference() {
