@@ -24,12 +24,8 @@ public with sharing class SoqlBuilderController {
             }
         }
         results.sort();
-        if (results.size() > 20) {
-            List<ObjectOption> trimmed = new List<ObjectOption>();
-            for (Integer i = 0; i < 20; i++) {
-                trimmed.add(results[i]);
-            }
-            return trimmed;
+        while (results.size() > 20) {
+            results.remove(results.size() - 1);
         }
         return results;
     }
@@ -39,15 +35,21 @@ public with sharing class SoqlBuilderController {
         if (String.isBlank(objectName)) {
             throw new AuraHandledException('Object name is required');
         }
-        Schema.SObjectType sot = Schema.getGlobalDescribe().get(objectName);
-        if (sot == null) {
+        List<Schema.DescribeSObjectResult> describes;
+        try {
+            describes = Schema.describeSObjects(new List<String>{ objectName });
+        } catch (Exception e) {
             throw new AuraHandledException('Object not found: ' + objectName);
         }
-        Map<String, Schema.SObjectField> fieldMap = sot.getDescribe().fields.getMap();
+        Map<String, Schema.SObjectField> fieldMap = describes[0].fields.getMap();
         List<FieldOption> results = new List<FieldOption>();
         for (String fieldKey : fieldMap.keySet()) {
             Schema.DescribeFieldResult dfr = fieldMap.get(fieldKey).getDescribe();
             if (!dfr.isAccessible()) {
+                continue;
+            }
+            Schema.DisplayType dt = dfr.getType();
+            if (dt == Schema.DisplayType.ADDRESS || dt == Schema.DisplayType.LOCATION) {
                 continue;
             }
             FieldOption opt = new FieldOption();
@@ -70,7 +72,9 @@ public with sharing class SoqlBuilderController {
         @AuraEnabled public Boolean isCustom;
 
         public Integer compareTo(Object other) {
-            return this.label.compareTo(((ObjectOption) other).label);
+            String a = this.label != null ? this.label : '';
+            String b = ((ObjectOption) other).label != null ? ((ObjectOption) other).label : '';
+            return a.compareTo(b);
         }
     }
 
@@ -81,7 +85,9 @@ public with sharing class SoqlBuilderController {
         @AuraEnabled public String referenceTo;
 
         public Integer compareTo(Object other) {
-            return this.label.compareTo(((FieldOption) other).label);
+            String a = this.label != null ? this.label : '';
+            String b = ((FieldOption) other).label != null ? ((FieldOption) other).label : '';
+            return a.compareTo(b);
         }
     }
 }
