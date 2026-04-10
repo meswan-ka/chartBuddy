@@ -1,6 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import executeSingleValueQuery from '@salesforce/apex/ChartQueryController.executeSingleValueQuery';
-import { COLORS, describeArc, clamp } from 'c/chartUtils';
+import { resolveTheme, describeArc, clamp } from 'c/chartUtils';
 
 const CX = 100;
 const CY = 100;
@@ -16,6 +16,11 @@ export default class PolarGauge extends LightningElement {
     @api maxValue = 100;
     @api valueSuffix = '%';
     @api recordId = '';
+    @api colorTheme = '';
+
+    get _theme() {
+        return resolveTheme(this.colorTheme);
+    }
 
     rawValue = null;
     error;
@@ -59,11 +64,11 @@ export default class PolarGauge extends LightningElement {
     }
 
     get trackColor() {
-        return COLORS.gaugeTrack;
+        return this._theme.gaugeTrack;
     }
 
     get fillColor() {
-        return COLORS.gaugeFill;
+        return this._theme.gaugeFill;
     }
 
     get strokeWidth() {
@@ -71,6 +76,6 @@ export default class PolarGauge extends LightningElement {
     }
 
     get titleColor() {
-        return COLORS.titleText;
+        return '#181818';
     }
 }

@@ -2,7 +2,7 @@ import { LightningElement, api, wire } from 'lwc';
 import executeRawQuery from '@salesforce/apex/ChartQueryController.executeRawQuery';
 import CURRENCY from '@salesforce/i18n/currency';
 import LOCALE from '@salesforce/i18n/locale';
-import { COLORS, formatValue, computeTicks, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
+import { resolveTheme, formatValue, computeTicks, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
 
 const SVG_WIDTH = 500;
 const DEFAULT_HEIGHT = 150;
@@ -12,14 +12,6 @@ const PAD_BOTTOM = 50;
 const PAD_LEFT = 60;
 const PAD_RIGHT_SINGLE = 20;
 const PAD_RIGHT_DUAL = 60;
-
-// Up to 4 series colors
-const LINE_COLORS = [
-    COLORS.primary,
-    COLORS.secondary,
-    '#E16032',
-    '#54A77B'
-];
 
 export default class LineChart extends LightningElement {
     @api chartTitle;
@@ -41,6 +33,15 @@ export default class LineChart extends LightningElement {
     @api secondarySuffix = '';
     @api height = DEFAULT_HEIGHT;
     @api recordId = '';
+    @api colorTheme = '';
+
+    get _theme() {
+        return resolveTheme(this.colorTheme);
+    }
+
+    get _lineColors() {
+        return [this._theme.primary, this._theme.secondary, '#E16032', '#54A77B'];
+    }
 
     _rawData;
     _error;
@@ -195,19 +196,19 @@ export default class LineChart extends LightningElement {
     // -- Colors --
 
     get primaryColor() {
-        return LINE_COLORS[0];
+        return this._lineColors[0];
     }
 
     get secondaryColor() {
-        return LINE_COLORS[1];
+        return this._lineColors[1];
     }
 
     get primaryAreaFill() {
-        return LINE_COLORS[0];
+        return this._lineColors[0];
     }
 
     get secondaryAreaFill() {
-        return LINE_COLORS[1];
+        return this._lineColors[1];
     }
 
     // -- Grid lines --
@@ -294,14 +295,14 @@ export default class LineChart extends LightningElement {
     // -- SLDS color constants for template --
 
     get gridColor() {
-        return COLORS.gridLine;
+        return '#e0e0e0';
     }
 
     get axisTextColor() {
-        return COLORS.axisText;
+        return '#706e6b';
     }
 
     get titleColor() {
-        return COLORS.titleText;
+        return '#181818';
     }
 }

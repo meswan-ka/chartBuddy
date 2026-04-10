@@ -2,7 +2,7 @@ import { LightningElement, api, wire } from 'lwc';
 import executeQueryWithPicklistSort from '@salesforce/apex/ChartQueryController.executeQueryWithPicklistSort';
 import CURRENCY from '@salesforce/i18n/currency';
 import LOCALE from '@salesforce/i18n/locale';
-import { PIPELINE_COLORS, formatValue, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
+import { resolveTheme, formatValue, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
 
 export default class PipelineChart extends LightningElement {
     @api chartTitle;
@@ -12,6 +12,11 @@ export default class PipelineChart extends LightningElement {
     @api objectApiName = '';
     @api picklistField = '';
     @api recordId = '';
+    @api colorTheme = '';
+
+    get _theme() {
+        return resolveTheme(this.colorTheme);
+    }
 
     _data = [];
     _error;
@@ -228,23 +233,23 @@ export default class PipelineChart extends LightningElement {
     }
 
     _interpolateColors(count) {
-        if (count <= 1) return [PIPELINE_COLORS[0]];
-        if (count <= PIPELINE_COLORS.length) {
+        if (count <= 1) return [this._theme.pipeline[0]];
+        if (count <= this._theme.pipeline.length) {
             // Pick evenly spaced colors from the palette
             return Array.from({ length: count }, (_, i) => {
-                const idx = Math.round((i / (count - 1)) * (PIPELINE_COLORS.length - 1));
-                return PIPELINE_COLORS[idx];
+                const idx = Math.round((i / (count - 1)) * (this._theme.pipeline.length - 1));
+                return this._theme.pipeline[idx];
             });
         }
         // More stages than palette entries: interpolate hex
         const results = [];
         for (let i = 0; i < count; i++) {
             const t = i / (count - 1);
-            const scaledIdx = t * (PIPELINE_COLORS.length - 1);
+            const scaledIdx = t * (this._theme.pipeline.length - 1);
             const lo = Math.floor(scaledIdx);
-            const hi = Math.min(lo + 1, PIPELINE_COLORS.length - 1);
+            const hi = Math.min(lo + 1, this._theme.pipeline.length - 1);
             const frac = scaledIdx - lo;
-            results.push(this._lerpHex(PIPELINE_COLORS[lo], PIPELINE_COLORS[hi], frac));
+            results.push(this._lerpHex(this._theme.pipeline[lo], this._theme.pipeline[hi], frac));
         }
         return results;
     }

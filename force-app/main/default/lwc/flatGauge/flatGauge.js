@@ -2,7 +2,7 @@ import { LightningElement, api, wire } from 'lwc';
 import executeSingleValueQuery from '@salesforce/apex/ChartQueryController.executeSingleValueQuery';
 import CURRENCY from '@salesforce/i18n/currency';
 import LOCALE from '@salesforce/i18n/locale';
-import { COLORS, formatValue, clamp, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
+import { resolveTheme, formatValue, clamp, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
 
 const BAR_LEFT = 20;
 const BAR_RIGHT = 480;
@@ -21,6 +21,11 @@ export default class FlatGauge extends LightningElement {
     @api valueSuffix = '';
     @api gradientStops;
     @api recordId = '';
+    @api colorTheme = '';
+
+    get _theme() {
+        return resolveTheme(this.colorTheme);
+    }
 
     rawValue = null;
     error;
@@ -68,7 +73,7 @@ export default class FlatGauge extends LightningElement {
     }
 
     get trackFill() {
-        return COLORS.gaugeTrack;
+        return this._theme.gaugeTrack;
     }
 
     get fillX() {
@@ -99,7 +104,7 @@ export default class FlatGauge extends LightningElement {
 
     get fillColor() {
         if (this.hasGradient) return 'url(#flat-gauge-grad)';
-        return COLORS.gaugeFill;
+        return this._theme.gaugeFill;
     }
 
     _gradientSynced = false;
@@ -199,7 +204,7 @@ export default class FlatGauge extends LightningElement {
     }
 
     get varianceColor() {
-        return this._variancePct >= 0 ? COLORS.positive : COLORS.negative;
+        return this._variancePct >= 0 ? this._theme.positive : this._theme.negative;
     }
 
     get varianceX() {
@@ -254,10 +259,10 @@ export default class FlatGauge extends LightningElement {
     }
 
     get titleColor() {
-        return COLORS.titleText;
+        return '#181818';
     }
 
     get axisTextColor() {
-        return COLORS.axisText;
+        return '#706e6b';
     }
 }

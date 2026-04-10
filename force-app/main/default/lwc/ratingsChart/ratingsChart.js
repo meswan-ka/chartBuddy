@@ -1,6 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import executeSingleValueQuery from '@salesforce/apex/ChartQueryController.executeSingleValueQuery';
-import { COLORS, clamp } from 'c/chartUtils';
+import { resolveTheme, clamp } from 'c/chartUtils';
 
 const DOT_RADIUS = 12;
 const DOT_DIAMETER = DOT_RADIUS * 2;
@@ -12,6 +12,11 @@ export default class RatingsChart extends LightningElement {
     @api query = '';
     @api maxDots = 10;
     @api recordId = '';
+    @api colorTheme = '';
+
+    get _theme() {
+        return resolveTheme(this.colorTheme);
+    }
 
     rawValue = null;
     error;
@@ -46,7 +51,7 @@ export default class RatingsChart extends LightningElement {
                 cx: DOT_RADIUS + i * (DOT_DIAMETER + DOT_GAP),
                 cy: DOT_CY,
                 r: DOT_RADIUS,
-                fill: i < filled ? COLORS.ratingFilled : COLORS.ratingEmpty
+                fill: i < filled ? this._theme.ratingFilled : this._theme.ratingEmpty
             });
         }
         return result;
@@ -62,6 +67,6 @@ export default class RatingsChart extends LightningElement {
     }
 
     get titleColor() {
-        return COLORS.titleText;
+        return '#181818';
     }
 }

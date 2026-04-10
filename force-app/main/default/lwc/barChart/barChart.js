@@ -3,8 +3,7 @@ import executeRawQuery from '@salesforce/apex/ChartQueryController.executeRawQue
 import CURRENCY from '@salesforce/i18n/currency';
 import LOCALE from '@salesforce/i18n/locale';
 import {
-    CHART_COLORS,
-    SERIES_COLORS,
+    resolveTheme,
     formatValue,
     computeTicks,
     groupSeriesData,
@@ -38,6 +37,15 @@ export default class BarChart extends LightningElement {
     @api valueSuffix;
     @api height = DEFAULT_HEIGHT;
     @api recordId = '';
+    @api colorTheme = '';
+
+    get _theme() {
+        return resolveTheme(this.colorTheme);
+    }
+
+    get _seriesColors() {
+        return [this._theme.primary, this._theme.secondary, this._theme.series[5]];
+    }
 
     _rawData;
     _error;
@@ -308,9 +316,9 @@ export default class BarChart extends LightningElement {
         if (!data || !data.seriesNames) return [];
         return data.seriesNames.map((name, i) => ({
             key: `legend-${i}`,
-            color: SERIES_COLORS[i % SERIES_COLORS.length],
+            color: this._seriesColors[i % this._seriesColors.length],
             label: name,
-            dotStyle: `background-color: ${SERIES_COLORS[i % SERIES_COLORS.length]}`
+            dotStyle: `background-color: ${this._seriesColors[i % this._seriesColors.length]}`
         }));
     }
 
@@ -319,7 +327,7 @@ export default class BarChart extends LightningElement {
     _simpleBars() {
         const data = this.processedData;
         const count = data.labels.length;
-        const color = CHART_COLORS[0];
+        const color = this._theme.series[0];
         const bars = [];
 
         if (this.isHorizontal) {
@@ -384,7 +392,7 @@ export default class BarChart extends LightningElement {
                         y: PAD_TOP + bandWidth * i + offset,
                         width: Math.max(w, 0),
                         height: barHeight,
-                        style: `fill: ${SERIES_COLORS[s % SERIES_COLORS.length]}`
+                        style: `fill: ${this._seriesColors[s % this._seriesColors.length]}`
                     });
                     cumulative += val;
                 }
@@ -405,7 +413,7 @@ export default class BarChart extends LightningElement {
                         y: yStart,
                         width: barWidth,
                         height: Math.max(h, 0),
-                        style: `fill: ${SERIES_COLORS[s % SERIES_COLORS.length]}`
+                        style: `fill: ${this._seriesColors[s % this._seriesColors.length]}`
                     });
                     cumulative += val;
                 }
@@ -436,7 +444,7 @@ export default class BarChart extends LightningElement {
                         y: PAD_TOP + bandWidth * i + groupOffset + s * (singleBarHeight + GROUP_INNER_GAP),
                         width: Math.max(w, 0),
                         height: singleBarHeight,
-                        style: `fill: ${SERIES_COLORS[s % SERIES_COLORS.length]}`
+                        style: `fill: ${this._seriesColors[s % this._seriesColors.length]}`
                     });
                 }
             }
@@ -455,7 +463,7 @@ export default class BarChart extends LightningElement {
                         y: PAD_TOP + this.plotHeight - Math.max(h, 0),
                         width: singleBarWidth,
                         height: Math.max(h, 0),
-                        style: `fill: ${SERIES_COLORS[s % SERIES_COLORS.length]}`
+                        style: `fill: ${this._seriesColors[s % this._seriesColors.length]}`
                     });
                 }
             }

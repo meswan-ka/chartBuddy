@@ -2,7 +2,7 @@ import { LightningElement, api, wire } from 'lwc';
 import executeQuery from '@salesforce/apex/ChartQueryController.executeQuery';
 import CURRENCY from '@salesforce/i18n/currency';
 import LOCALE from '@salesforce/i18n/locale';
-import { COLORS, formatValue, computeTicks, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
+import { resolveTheme, formatValue, computeTicks, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
 
 const PAD_TOP = 20;
 const PAD_RIGHT = 20;
@@ -18,6 +18,11 @@ export default class WaterfallChart extends LightningElement {
     @api valueSuffix;
     @api height = 150;
     @api recordId = '';
+    @api colorTheme = '';
+
+    get _theme() {
+        return resolveTheme(this.colorTheme);
+    }
 
     _data = [];
     _error;
@@ -214,11 +219,11 @@ export default class WaterfallChart extends LightningElement {
 
             let color;
             if (s.isStart || s.isEnd) {
-                color = COLORS.waterfallStart;
+                color = this._theme.waterfallStart;
             } else if (s.isPositive) {
-                color = COLORS.waterfallUp;
+                color = this._theme.waterfallUp;
             } else {
-                color = COLORS.waterfallDown;
+                color = this._theme.waterfallDown;
             }
 
             return {

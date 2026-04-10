@@ -24,6 +24,7 @@ export default class ChartBuddyContainer extends LightningElement {
     @api recordId;
 
     containerTitle = 'Chart Dashboard';
+    colorTheme = '';
     columns = [];
     isLoading = false;
     errorMessage;
@@ -68,6 +69,9 @@ export default class ChartBuddyContainer extends LightningElement {
 
         if (parsed.containerTitle) {
             this.containerTitle = parsed.containerTitle;
+        }
+        if (parsed.colorTheme) {
+            this.colorTheme = parsed.colorTheme;
         }
 
         if (!Array.isArray(parsed.columns) || parsed.columns.length === 0) {
