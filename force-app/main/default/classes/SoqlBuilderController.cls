@@ -1,5 +1,4 @@
 public with sharing class SoqlBuilderController {
-
     @AuraEnabled(cacheable=true)
     public static List<ObjectOption> findObjects(String searchTerm) {
         List<ObjectOption> results = new List<ObjectOption>();
@@ -9,17 +8,21 @@ public with sharing class SoqlBuilderController {
         String term = searchTerm.toLowerCase();
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
         for (String apiName : globalDescribe.keySet()) {
-            Schema.DescribeSObjectResult desc = globalDescribe.get(apiName).getDescribe();
-            if (!desc.isQueryable()) {
+            Schema.SObjectType sot = globalDescribe.get(apiName);
+            if (sot == null) {
+                continue;
+            }
+            Schema.DescribeSObjectResult objDesc = sot.getDescribe();
+            if (!objDesc.isQueryable()) {
                 continue;
             }
             String lowerApi = apiName.toLowerCase();
-            String lowerLabel = desc.getLabel().toLowerCase();
+            String lowerLabel = objDesc.getLabel().toLowerCase();
             if (lowerApi.contains(term) || lowerLabel.contains(term)) {
                 ObjectOption opt = new ObjectOption();
-                opt.apiName = desc.getName();
-                opt.label = desc.getLabel();
-                opt.isCustom = desc.isCustom();
+                opt.apiName = objDesc.getName();
+                opt.label = objDesc.getLabel();
+                opt.isCustom = objDesc.isCustom();
                 results.add(opt);
             }
         }
@@ -44,7 +47,11 @@ public with sharing class SoqlBuilderController {
         Map<String, Schema.SObjectField> fieldMap = describes[0].fields.getMap();
         List<FieldOption> results = new List<FieldOption>();
         for (String fieldKey : fieldMap.keySet()) {
-            Schema.DescribeFieldResult dfr = fieldMap.get(fieldKey).getDescribe();
+            Schema.SObjectField sof = fieldMap.get(fieldKey);
+            if (sof == null) {
+                continue;
+            }
+            Schema.DescribeFieldResult dfr = sof.getDescribe();
             if (!dfr.isAccessible()) {
                 continue;
             }
@@ -67,9 +74,12 @@ public with sharing class SoqlBuilderController {
     }
 
     public class ObjectOption implements Comparable {
-        @AuraEnabled public String apiName;
-        @AuraEnabled public String label;
-        @AuraEnabled public Boolean isCustom;
+        @AuraEnabled
+        public String apiName;
+        @AuraEnabled
+        public String label;
+        @AuraEnabled
+        public Boolean isCustom;
 
         public Integer compareTo(Object other) {
             String a = this.label != null ? this.label : '';
@@ -79,10 +89,14 @@ public with sharing class SoqlBuilderController {
     }
 
     public class FieldOption implements Comparable {
-        @AuraEnabled public String apiName;
-        @AuraEnabled public String label;
-        @AuraEnabled public String fieldType;
-        @AuraEnabled public String referenceTo;
+        @AuraEnabled
+        public String apiName;
+        @AuraEnabled
+        public String label;
+        @AuraEnabled
+        public String fieldType;
+        @AuraEnabled
+        public String referenceTo;
 
         public Integer compareTo(Object other) {
             String a = this.label != null ? this.label : '';
