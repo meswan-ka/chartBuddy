@@ -3,7 +3,7 @@
         <template lwc:if={hasData}>
             <svg xmlns="http://www.w3.org/2000/svg"
                  class="chart-svg"
-                 viewBox="0 0 600 140"
+                 viewBox="0 0 600 70"
                  preserveAspectRatio="xMidYMid meet"
                  role="img"
                  aria-label={chartTitle}>
@@ -17,7 +17,7 @@
                           x={stage.labelX}
                           y={stage.labelY}
                           text-anchor="middle"
-                          font-size="11"
+                          font-size="9"
                           class="stage-label">{stage.label}</text>
                 </template>
 
@@ -35,7 +35,7 @@
                           y={stage.valueY}
                           text-anchor="middle"
                           dominant-baseline="central"
-                          font-size="14"
+                          font-size="10"
                           font-weight="bold"
                           class="stage-value">{stage.valueText}</text>
                 </template>
@@ -50,7 +50,7 @@
         <template lwc:if={isEmpty}>
             <svg xmlns="http://www.w3.org/2000/svg"
                  class="chart-svg"
-                 viewBox="0 0 600 140"
+                 viewBox="0 0 600 70"
                  preserveAspectRatio="xMidYMid meet"
                  role="img"
                  aria-label="No data available">
@@ -59,9 +59,9 @@
                           d={stage.pathD}
                           class="skeleton-shape"></path>
                 </template>
-                <text x="300" y="95"
+                <text x="300" y="50"
                       text-anchor="middle"
-                      font-size="12"
+                      font-size="10"
                       class="skeleton-label">Not enough data to draw this chart.</text>
             </svg>
             <template lwc:if={chartTitle}>

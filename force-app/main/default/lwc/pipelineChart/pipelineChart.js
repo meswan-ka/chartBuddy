@@ -57,9 +57,9 @@ export default class PipelineChart extends LightningElement {
     get skeletonStages() {
         const n = 4;
         const svgWidth = 600;
-        const topPad = 25;
-        const bottomPad = 5;
-        const chartHeight = 140 - topPad - bottomPad;
+        const topPad = 14;
+        const bottomPad = 4;
+        const chartHeight = 70 - topPad - bottomPad;
         const centerY = topPad + chartHeight / 2;
         const segWidth = svgWidth / n;
         const chevronDepth = Math.min(segWidth * 0.12, 15);
@@ -102,9 +102,9 @@ export default class PipelineChart extends LightningElement {
 
         const n = data.length;
         const svgWidth = 600;
-        const topPad = 25;
-        const bottomPad = 5;
-        const chartHeight = 140 - topPad - bottomPad;
+        const topPad = 14;
+        const bottomPad = 4;
+        const chartHeight = 70 - topPad - bottomPad;
         const centerY = topPad + chartHeight / 2;
         const segWidth = svgWidth / n;
 
