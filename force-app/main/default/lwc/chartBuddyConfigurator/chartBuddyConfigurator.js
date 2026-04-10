@@ -158,7 +158,7 @@ export default class ChartBuddyConfigurator extends LightningElement {
                 ...col,
                 widthStr: String(col.width),
                 columnLabel: `#${idx + 1}`,
-                chartTypeLabel: CHART_TYPE_LABEL_MAP[chartType] || chartType,
+                chartTypeLabel: (CHART_TYPE_LABEL_MAP[chartType] || chartType) + (col.config.chartTitle ? ' (' + col.config.chartTitle + ')' : ''),
                 widthLabel: `${col.width}/12`,
                 iconName: CHART_ICON_MAP[chartType] || 'utility:chart',
                 expandIcon: isExpanded ? 'utility:chevrondown' : 'utility:chevronright',
