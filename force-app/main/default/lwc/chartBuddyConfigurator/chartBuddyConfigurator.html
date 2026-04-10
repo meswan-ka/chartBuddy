@@ -523,12 +523,12 @@
                                         class="slds-m-bottom_small"
                                     ></lightning-input>
                                     <lightning-textarea
-                                        label="Trend Query (optional)"
+                                        label="Trend Baseline Query (optional)"
                                         value={col.config.trendQuery}
                                         data-id={col.id}
                                         data-field="trendQuery"
                                         onchange={handleColumnConfigChange}
-                                        placeholder="SELECT COUNT(Id) FROM Contact WHERE AccountId = :recordId AND CreatedDate = THIS_WEEK"
+                                        placeholder="SELECT COUNT(Id) FROM Contact WHERE AccountId = :recordId AND CreatedDate &lt; THIS_WEEK"
                                         class="slds-m-bottom_small"
                                     ></lightning-textarea>
                                     <lightning-input

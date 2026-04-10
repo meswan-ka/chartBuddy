@@ -80,25 +80,26 @@ export default class MetricCard extends LightningElement {
         });
     }
 
-    get hasTrend() {
-        return this.trendQuery && this._trendValue !== null && this._trendValue !== undefined && this._trendValue !== 0;
+    get _trendDelta() {
+        if (this._mainValue == null || this._trendValue == null) return null;
+        return this._mainValue - this._trendValue;
     }
 
-    get trendIsPositive() {
-        return this._trendValue > 0;
+    get hasTrend() {
+        return this.trendQuery && this._trendDelta !== null && this._trendDelta !== 0;
     }
 
     get trendIconName() {
-        return this._trendValue > 0 ? 'utility:arrowup' : 'utility:arrowdown';
+        return this._trendDelta > 0 ? 'utility:arrowup' : 'utility:arrowdown';
     }
 
     get trendText() {
-        const abs = Math.abs(this._trendValue);
+        const abs = Math.abs(this._trendDelta);
         return formatValue(abs, { suffix: this.trendSuffix || '', abbreviate: false });
     }
 
     get trendClass() {
-        return this._trendValue > 0 ? 'trend trend-positive' : 'trend trend-negative';
+        return this._trendDelta > 0 ? 'trend trend-positive' : 'trend trend-negative';
     }
 
     get iconBackgroundStyle() {
