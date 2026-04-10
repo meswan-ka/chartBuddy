@@ -4,7 +4,7 @@ import getConfigs from '@salesforce/apex/ChartBuddyConfigController.getConfigs';
 import saveConfig from '@salesforce/apex/ChartBuddyConfigController.saveConfig';
 import deleteConfig from '@salesforce/apex/ChartBuddyConfigController.deleteConfig';
 import { refreshApex } from '@salesforce/apex';
-import { distributeWidths } from 'c/chartUtils';
+import { distributeWidths, getThemeOptions, DEFAULT_THEME } from 'c/chartUtils';
 
 const CHART_TYPE_OPTIONS = [
     { label: 'Bar / Column Chart', value: 'barChart' },
@@ -88,6 +88,7 @@ export default class ChartBuddyConfigurator extends LightningElement {
     configName = '';
     description = '';
     containerTitle = '';
+    colorTheme = DEFAULT_THEME;
     @track columns = [];
     @track expandedColumns = {};
     contextRecordId = '';
@@ -100,6 +101,9 @@ export default class ChartBuddyConfigurator extends LightningElement {
     }
 
     // --- Getters: Options ---
+    get colorThemeOptions() {
+        return getThemeOptions();
+    }
     get chartTypeOptions() {
         return CHART_TYPE_OPTIONS;
     }
@@ -201,7 +205,7 @@ export default class ChartBuddyConfigurator extends LightningElement {
 
     get configJsonPreview() {
         return JSON.stringify(
-            { containerTitle: this.containerTitle, columns: this.columns },
+            { containerTitle: this.containerTitle, colorTheme: this.colorTheme, columns: this.columns },
             null,
             2
         );
@@ -224,10 +228,12 @@ export default class ChartBuddyConfigurator extends LightningElement {
         try {
             const parsed = JSON.parse(selected.Config_JSON__c || '{}');
             this.containerTitle = parsed.containerTitle || '';
+            this.colorTheme = parsed.colorTheme || DEFAULT_THEME;
             this.columns = (parsed.columns || []).map(c => ({ ...c }));
             this.expandedColumns = {};
         } catch (_err) {
             this.containerTitle = '';
+            this.colorTheme = DEFAULT_THEME;
             this.columns = [];
             this.expandedColumns = {};
         }
@@ -235,6 +241,10 @@ export default class ChartBuddyConfigurator extends LightningElement {
 
     handleConfigNameChange(event) {
         this.configName = event.target.value;
+    }
+
+    handleColorThemeChange(event) {
+        this.colorTheme = event.detail.value;
     }
     handleDescriptionChange(event) {
         this.description = event.target.value;
@@ -257,6 +267,7 @@ export default class ChartBuddyConfigurator extends LightningElement {
         }
         const configJson = JSON.stringify({
             containerTitle: this.containerTitle,
+            colorTheme: this.colorTheme,
             columns: this.columns
         });
         try {
@@ -423,6 +434,7 @@ export default class ChartBuddyConfigurator extends LightningElement {
         this.configName = '';
         this.description = '';
         this.containerTitle = '';
+        this.colorTheme = DEFAULT_THEME;
         this.columns = [];
         this.expandedColumns = {};
     }
