@@ -116,9 +116,26 @@ export default class SoqlQueryBuilder extends LightningElement {
         return this._query;
     }
     set query(value) {
-        this._query = value || '';
-        if (!this._initialParseComplete) {
-            this._parseInitialQuery();
+        const newQuery = value || '';
+        if (newQuery === this._query) return;
+        this._query = newQuery;
+        if (this._initialParseComplete) {
+            // Query changed after initial load -- re-parse
+            if (this._query) {
+                const result = parseSoql(this._query);
+                if (result.success) {
+                    this._applyParseState(result.state);
+                    this.isRawMode = false;
+                    if (result.state.objectName) {
+                        this._loadFields(result.state.objectName);
+                    }
+                } else {
+                    this.rawQuery = this._query;
+                    this.isRawMode = true;
+                }
+            } else {
+                this._initEmptySlots();
+            }
         }
     }
 

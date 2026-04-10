@@ -47,16 +47,21 @@ function extractClauses(soql) {
     const normalized = soql.trim();
     const result = { select: '', from: '', where: '', groupBy: '', orderBy: '', limit: '' };
 
+    // Build a mask that replaces single-quoted strings with same-length placeholders
+    // so clause keywords inside string literals are not matched
+    const masked = normalized.replace(/'[^']*'/g, match => '_'.repeat(match.length));
+
     const clausePattern = /\b(SELECT|FROM|WHERE|GROUP\s+BY|ORDER\s+BY|LIMIT)\b/gi;
     const matches = [];
     let match;
-    while ((match = clausePattern.exec(normalized)) !== null) {
+    while ((match = clausePattern.exec(masked)) !== null) {
         matches.push({ keyword: match[1].toUpperCase().replace(/\s+/g, ' '), index: match.index });
     }
 
     for (let i = 0; i < matches.length; i++) {
         const start = matches[i].index + matches[i].keyword.length;
         const end = i + 1 < matches.length ? matches[i + 1].index : normalized.length;
+        // Extract from the ORIGINAL string (not masked) to preserve actual values
         const content = normalized.substring(start, end).trim();
         const key = matches[i].keyword.replace(' ', '').toLowerCase();
         if (key === 'select') result.select = content;
@@ -259,9 +264,16 @@ export function buildSoql(state, profile) {
         }
     }
 
-    // ORDER BY
+    // ORDER BY - use alias if the field is aggregated
     if (profile.showOrderBy && state.orderByField) {
-        soql += '\nORDER BY ' + state.orderByField + ' ' + (state.orderByDirection || 'ASC');
+        let orderField = state.orderByField;
+        for (const field of slotFields) {
+            if (field && field.fieldName === orderField && field.aggregate && field.alias) {
+                orderField = field.alias;
+                break;
+            }
+        }
+        soql += '\nORDER BY ' + orderField + ' ' + (state.orderByDirection || 'ASC');
     }
 
     // LIMIT
