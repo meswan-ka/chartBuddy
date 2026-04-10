@@ -71,75 +71,6 @@
     font-size: 0.75rem;
 }
 
-/* Field slot table layout */
-.field-slots-table {
-    display: table;
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 0.375rem;
-}
-
-.field-slot-row {
-    display: table-row;
-}
-
-.field-slot-cell {
-    display: table-cell;
-    vertical-align: middle;
-    padding-right: 0.5rem;
-}
-
-.field-slot-cell:last-child {
-    padding-right: 0;
-}
-
-.field-slot-label-cell {
-    width: 7rem;
-    white-space: nowrap;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--slds-g-color-neutral-base-10, #181818);
-    padding-top: 0.25rem;
-}
-
-.field-slot-agg-cell {
-    width: 8rem;
-}
-
-.field-slot-field-cell {
-    width: auto;
-}
-
-.field-slot-alias-cell {
-    width: 5rem;
-    font-size: 0.75rem;
-    color: var(--slds-g-color-neutral-base-30, #706e6b);
-    white-space: nowrap;
-    text-align: right;
-}
-
-.field-slot-toggle-cell {
-    width: 5.5rem;
-    text-align: right;
-}
-
-.custom-field-toggle {
-    font-size: 0.6875rem;
-    color: var(--slds-g-color-brand-base-50, #0176d3);
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.custom-field-toggle:hover {
-    text-decoration: underline;
-}
-
-.slot-optional {
-    font-size: 0.6875rem;
-    font-weight: 400;
-    color: var(--slds-g-color-neutral-base-30, #706e6b);
-}
-
 /* Record context */
 .record-context-row {
     display: flex;
@@ -159,6 +90,126 @@
     white-space: nowrap;
 }
 
+/* Fields help text */
+.fields-help-text {
+    font-size: 0.75rem;
+    color: var(--slds-g-color-neutral-base-30, #706e6b);
+    margin-bottom: 0.625rem;
+    line-height: 1.4;
+}
+
+/* Dynamic field rows */
+.field-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    margin-bottom: 0.375rem;
+    border: 1px solid var(--slds-g-color-border-base-1, #e5e5e5);
+    border-radius: 0.25rem;
+    background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.field-row-role {
+    flex: 0 0 5.5rem;
+    padding-top: 0.5rem;
+}
+
+.field-role-badge {
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.125rem;
+    background: var(--slds-g-color-neutral-base-80, #c9c9c9);
+    color: var(--slds-g-color-neutral-base-10, #181818);
+    white-space: nowrap;
+}
+
+.field-role-badge[data-role="Measure"],
+.field-role-badge[data-role="Measure 2"],
+.field-role-badge[data-role="Measure 3"],
+.field-role-badge[data-role="Gauge Value"],
+.field-role-badge[data-role="Rating Value"] {
+    background: var(--slds-g-color-brand-base-50, #0176d3);
+    color: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.field-row-aggregate {
+    flex: 0 0 7rem;
+}
+
+.field-row-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.field-row-alias {
+    flex: 0 0 5rem;
+    padding-top: 0.5rem;
+    text-align: right;
+}
+
+.alias-text {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--slds-g-color-neutral-base-30, #706e6b);
+    white-space: nowrap;
+}
+
+.field-row-remove {
+    flex: 0 0 1.5rem;
+    padding-top: 0.375rem;
+}
+
+.custom-field-toggle {
+    font-size: 0.6875rem;
+    color: var(--slds-g-color-brand-base-50, #0176d3);
+    cursor: pointer;
+    margin-top: 0.125rem;
+    display: inline-block;
+}
+
+.custom-field-toggle:hover {
+    text-decoration: underline;
+}
+
+/* Single-mode field row (gauges) */
+.single-field-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--slds-g-color-border-base-1, #e5e5e5);
+    border-radius: 0.25rem;
+    background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.single-field-label {
+    flex: 0 0 6rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--slds-g-color-neutral-base-10, #181818);
+    padding-top: 0.5rem;
+}
+
+.single-field-aggregate {
+    flex: 0 0 7rem;
+}
+
+.single-field-picker {
+    flex: 1;
+    min-width: 0;
+}
+
+.single-field-alias {
+    flex: 0 0 5rem;
+    padding-top: 0.5rem;
+    text-align: right;
+}
+
 /* WHERE rows */
 .where-row {
     display: flex;
@@ -173,7 +224,7 @@
 }
 
 .where-operator {
-    flex: 0 0 7rem;
+    flex: 0 0 8.5rem;
 }
 
 .where-value {
@@ -206,7 +257,7 @@
 }
 
 .order-direction {
-    flex: 0 0 6rem;
+    flex: 0 0 8rem;
 }
 
 /* SOQL Preview */

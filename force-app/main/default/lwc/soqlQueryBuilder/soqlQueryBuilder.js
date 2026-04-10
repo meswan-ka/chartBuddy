@@ -4,6 +4,7 @@ import describeFields from '@salesforce/apex/SoqlBuilderController.describeField
 import { parseSoql, buildSoql } from './soqlParser';
 
 const AGGREGATE_OPTIONS = [
+    { label: '-- None --', value: '' },
     { label: 'SUM', value: 'SUM' },
     { label: 'COUNT', value: 'COUNT' },
     { label: 'AVG', value: 'AVG' },
@@ -12,86 +13,77 @@ const AGGREGATE_OPTIONS = [
 ];
 
 const OPERATOR_OPTIONS = [
-    { label: '=', value: '=' },
-    { label: '!=', value: '!=' },
-    { label: '>', value: '>' },
-    { label: '<', value: '<' },
-    { label: '>=', value: '>=' },
-    { label: '<=', value: '<=' },
-    { label: 'LIKE', value: 'LIKE' },
-    { label: 'IN', value: 'IN' },
-    { label: 'NOT IN', value: 'NOT IN' }
+    { label: '= equals', value: '=' },
+    { label: '!= not equal', value: '!=' },
+    { label: '> greater than', value: '>' },
+    { label: '< less than', value: '<' },
+    { label: '>= at least', value: '>=' },
+    { label: '<= at most', value: '<=' },
+    { label: 'LIKE contains', value: 'LIKE' },
+    { label: 'IN one of', value: 'IN' },
+    { label: 'NOT IN none of', value: 'NOT IN' }
 ];
 
 const DIRECTION_OPTIONS = [
-    { label: 'ASC', value: 'ASC' },
-    { label: 'DESC', value: 'DESC' }
+    { label: 'Ascending', value: 'ASC' },
+    { label: 'Descending', value: 'DESC' }
 ];
 
+/**
+ * Chart profiles control the field-editing mode and clause visibility.
+ * mode: 'dynamic' = free-form add/remove fields (multi-field charts)
+ * mode: 'single'  = exactly one aggregate value field (gauges)
+ */
 const BUILDER_PROFILES = {
     barChart: {
-        slots: [
-            { key: 'label', label: 'Label', requireAggregate: false, required: true },
-            { key: 'value', label: 'Value', requireAggregate: true, required: true },
-            { key: 'series', label: 'Series', requireAggregate: false, required: false }
-        ],
+        mode: 'dynamic',
         autoGroupBy: true,
         showOrderBy: true,
         showLimit: true
     },
     lineChart: {
-        slots: [
-            { key: 'label', label: 'Label', requireAggregate: false, required: true },
-            { key: 'value', label: 'Value', requireAggregate: true, required: true },
-            { key: 'secondaryValue', label: 'Secondary Value', requireAggregate: true, required: false }
-        ],
+        mode: 'dynamic',
         autoGroupBy: true,
         showOrderBy: true,
         showLimit: true
     },
     flatGauge: {
-        slots: [
-            { key: 'value', label: 'Value', requireAggregate: true, required: true }
-        ],
+        mode: 'single',
         autoGroupBy: false,
         showOrderBy: false,
         showLimit: false
     },
     polarGauge: {
-        slots: [
-            { key: 'value', label: 'Value', requireAggregate: true, required: true }
-        ],
+        mode: 'single',
         autoGroupBy: false,
         showOrderBy: false,
         showLimit: false
     },
     ratingsChart: {
-        slots: [
-            { key: 'value', label: 'Value', requireAggregate: true, required: true }
-        ],
+        mode: 'single',
         autoGroupBy: false,
         showOrderBy: false,
         showLimit: false
     },
     pipelineChart: {
-        slots: [
-            { key: 'label', label: 'Label', requireAggregate: false, required: true },
-            { key: 'value', label: 'Value', requireAggregate: true, required: true }
-        ],
+        mode: 'dynamic',
         autoGroupBy: true,
         showOrderBy: false,
         showLimit: true
     },
     waterfallChart: {
-        slots: [
-            { key: 'label', label: 'Label', requireAggregate: false, required: true },
-            { key: 'value', label: 'Value', requireAggregate: true, required: true }
-        ],
+        mode: 'dynamic',
         autoGroupBy: true,
         showOrderBy: false,
         showLimit: true
     }
 };
+
+let _fieldIdCounter = 0;
+function nextFieldId() {
+    _fieldIdCounter++;
+    return 'fld-' + _fieldIdCounter;
+}
 
 export default class SoqlQueryBuilder extends LightningElement {
     // --- API ---
@@ -107,7 +99,7 @@ export default class SoqlQueryBuilder extends LightningElement {
         const prev = this._chartType;
         this._chartType = value || 'barChart';
         if (prev && prev !== this._chartType && this._initialParseComplete) {
-            this._resetSlotsForProfile();
+            this._resetFieldsForProfile();
         }
     }
 
@@ -120,7 +112,6 @@ export default class SoqlQueryBuilder extends LightningElement {
         if (newQuery === this._query) return;
         this._query = newQuery;
         if (this._initialParseComplete) {
-            // Query changed after initial load -- re-parse
             if (this._query) {
                 const result = parseSoql(this._query);
                 if (result.success) {
@@ -134,7 +125,7 @@ export default class SoqlQueryBuilder extends LightningElement {
                     this.isRawMode = true;
                 }
             } else {
-                this._initEmptySlots();
+                this._initEmptyFields();
             }
         }
     }
@@ -158,7 +149,6 @@ export default class SoqlQueryBuilder extends LightningElement {
     _rawChangeTimeout = null;
     _describeCounter = 0;
 
-    // Warning modal state
     showWarningModal = false;
     @track warningMessages = [];
     _pendingParseState = null;
@@ -168,7 +158,7 @@ export default class SoqlQueryBuilder extends LightningElement {
         if (!this._initialParseComplete && this._query) {
             this._parseInitialQuery();
         } else if (!this._initialParseComplete) {
-            this._initEmptySlots();
+            this._initEmptyFields();
             this._initialParseComplete = true;
         }
     }
@@ -178,8 +168,21 @@ export default class SoqlQueryBuilder extends LightningElement {
         return BUILDER_PROFILES[this._chartType] || BUILDER_PROFILES.barChart;
     }
 
+    get isDynamicMode() {
+        return this.profile.mode === 'dynamic';
+    }
+
+    get isSingleMode() {
+        return this.profile.mode === 'single';
+    }
+
     get aggregateOptions() {
         return AGGREGATE_OPTIONS;
+    }
+
+    get aggregateOptionsRequired() {
+        // For single-mode gauges, no "None" option
+        return AGGREGATE_OPTIONS.filter(o => o.value !== '');
     }
 
     get operatorOptions() {
@@ -202,23 +205,23 @@ export default class SoqlQueryBuilder extends LightningElement {
         return this.profile.showLimit && !this.profile.showOrderBy;
     }
 
-    get renderedSlots() {
-        const profile = this.profile;
-        return profile.slots.map((slot, idx) => {
-            const field = this.fields[idx] || { fieldName: '', aggregate: '', alias: '' };
-            return {
-                key: slot.key,
-                label: slot.label,
-                requireAggregate: slot.requireAggregate,
-                required: slot.required,
-                index: idx,
-                fieldName: field.fieldName || '',
-                aggregate: field.aggregate || '',
-                alias: field.alias || '',
-                showCustomInput: this.customFieldFlags[slot.key] === true,
-                requiredLabel: slot.required ? '*' : '(optional)'
-            };
-        });
+    get renderedFields() {
+        return this.fields.map((field, idx) => ({
+            ...field,
+            index: idx,
+            showCustomInput: this.customFieldFlags[field.id] === true,
+            isRemovable: this.fields.length > 1,
+            roleLabel: this._getFieldRoleLabel(field, idx)
+        }));
+    }
+
+    get singleField() {
+        const field = this.fields[0] || { id: 'single', fieldName: '', aggregate: '', alias: '' };
+        return {
+            ...field,
+            index: 0,
+            showCustomInput: this.customFieldFlags[field.id] === true
+        };
     }
 
     get renderedWhereConditions() {
@@ -336,7 +339,7 @@ export default class SoqlQueryBuilder extends LightningElement {
     }
 
     _clearFieldSelections() {
-        this._initEmptySlots();
+        this._initEmptyFields();
         this.recordContextField = '';
         this.whereConditions = [];
         this.orderByField = '';
@@ -344,7 +347,21 @@ export default class SoqlQueryBuilder extends LightningElement {
         this._fireQueryChange();
     }
 
-    // --- Field Slot Handlers ---
+    // --- Dynamic Field Handlers ---
+    handleAddField() {
+        this.fields = [
+            ...this.fields,
+            { id: nextFieldId(), fieldName: '', aggregate: '', alias: '' }
+        ];
+    }
+
+    handleRemoveField(event) {
+        const idx = parseInt(event.currentTarget.dataset.index, 10);
+        if (this.fields.length <= 1) return;
+        this.fields = this.fields.filter((_, i) => i !== idx);
+        this._fireQueryChange();
+    }
+
     handleFieldChange(event) {
         const idx = parseInt(event.currentTarget.dataset.index, 10);
         const value = event.detail.value;
@@ -352,7 +369,7 @@ export default class SoqlQueryBuilder extends LightningElement {
         updatedFields[idx] = {
             ...updatedFields[idx],
             fieldName: value,
-            alias: updatedFields[idx].aggregate ? this._generateAlias(value, idx) : null
+            alias: updatedFields[idx].aggregate ? this._generateAlias(value, idx) : ''
         };
         this.fields = updatedFields;
         this._fireQueryChange();
@@ -362,10 +379,11 @@ export default class SoqlQueryBuilder extends LightningElement {
         const idx = parseInt(event.currentTarget.dataset.index, 10);
         const value = event.detail.value;
         const updatedFields = [...this.fields];
+        const fieldName = updatedFields[idx].fieldName;
         updatedFields[idx] = {
             ...updatedFields[idx],
             aggregate: value,
-            alias: this._generateAlias(updatedFields[idx].fieldName, idx)
+            alias: value ? this._generateAlias(fieldName, idx) : ''
         };
         this.fields = updatedFields;
         this._fireQueryChange();
@@ -386,7 +404,7 @@ export default class SoqlQueryBuilder extends LightningElement {
         updatedFields[idx] = {
             ...updatedFields[idx],
             fieldName: value,
-            alias: updatedFields[idx].aggregate ? this._generateAlias(value, idx) : null
+            alias: updatedFields[idx].aggregate ? this._generateAlias(value, idx) : ''
         };
         this.fields = updatedFields;
         this._fireQueryChange();
@@ -508,17 +526,19 @@ export default class SoqlQueryBuilder extends LightningElement {
     }
 
     // --- Private Methods ---
-    _initEmptySlots() {
-        const profile = this.profile;
-        this.fields = profile.slots.map(() => ({
-            fieldName: '',
-            aggregate: '',
-            alias: ''
-        }));
+    _initEmptyFields() {
+        if (this.isSingleMode) {
+            this.fields = [{ id: nextFieldId(), fieldName: '', aggregate: 'SUM', alias: '' }];
+        } else {
+            this.fields = [
+                { id: nextFieldId(), fieldName: '', aggregate: '', alias: '' },
+                { id: nextFieldId(), fieldName: '', aggregate: 'SUM', alias: '' }
+            ];
+        }
     }
 
-    _resetSlotsForProfile() {
-        this._initEmptySlots();
+    _resetFieldsForProfile() {
+        this._initEmptyFields();
         if (!this.profile.showOrderBy) {
             this.orderByField = '';
             this.orderByDirection = 'ASC';
@@ -531,7 +551,7 @@ export default class SoqlQueryBuilder extends LightningElement {
 
     _parseInitialQuery() {
         if (!this._query) {
-            this._initEmptySlots();
+            this._initEmptyFields();
             this._initialParseComplete = true;
             return;
         }
@@ -557,19 +577,17 @@ export default class SoqlQueryBuilder extends LightningElement {
         this.orderByDirection = state.orderByDirection || 'ASC';
         this.queryLimit = state.queryLimit != null ? String(state.queryLimit) : '';
 
-        const profile = this.profile;
         const parsedFields = state.fields || [];
-        this.fields = profile.slots.map((slot, idx) => {
-            const parsed = parsedFields[idx];
-            if (!parsed) {
-                return { fieldName: '', aggregate: '', alias: '' };
-            }
-            return {
-                fieldName: parsed.fieldName || '',
-                aggregate: parsed.aggregate || '',
-                alias: parsed.alias || ''
-            };
-        });
+        if (parsedFields.length > 0) {
+            this.fields = parsedFields.map(f => ({
+                id: nextFieldId(),
+                fieldName: f.fieldName || '',
+                aggregate: f.aggregate || '',
+                alias: f.alias || ''
+            }));
+        } else {
+            this._initEmptyFields();
+        }
 
         this.whereConditions = (state.whereConditions || []).map(c => ({ ...c }));
     }
@@ -605,8 +623,44 @@ export default class SoqlQueryBuilder extends LightningElement {
         return alias;
     }
 
+    get singleFieldLabel() {
+        const labels = {
+            flatGauge: 'Gauge Value',
+            polarGauge: 'Gauge Value',
+            ratingsChart: 'Rating Value'
+        };
+        return labels[this._chartType] || 'Value';
+    }
+
+    get fieldsHelpText() {
+        const hints = {
+            barChart: 'Add Group By fields for chart categories and a Measure for the aggregated value.',
+            lineChart: 'Add a Group By field for the X-axis and Measure fields for each line.',
+            pipelineChart: 'Add a Group By field for pipeline stages and a Measure for stage values.',
+            waterfallChart: 'Add a Group By field for each step and a Measure for the step value.',
+            flatGauge: 'Select the field and aggregate function that produces the gauge value.',
+            polarGauge: 'Select the field and aggregate function that produces the gauge value.',
+            ratingsChart: 'Select the field and aggregate function that produces the rating value.'
+        };
+        return hints[this._chartType] || '';
+    }
+
+    /**
+     * Derive a role label for each field based on aggregate status.
+     * Non-aggregate fields are "Group By" (they appear in GROUP BY).
+     * Aggregate fields are "Measure" (they get aggregated).
+     */
+    _getFieldRoleLabel(field, idx) {
+        if (this.isSingleMode) return this.singleFieldLabel;
+        if (field.aggregate) {
+            const measureIdx = this.fields.filter((f, i) => i < idx && f.aggregate).length;
+            return measureIdx === 0 ? 'Measure' : 'Measure ' + (measureIdx + 1);
+        }
+        const catIdx = this.fields.filter((f, i) => i < idx && !f.aggregate).length;
+        return catIdx === 0 ? 'Group By' : 'Group By ' + (catIdx + 1);
+    }
+
     _fireQueryChange() {
-        let soqlValue = '';
         const detail = {
             value: '',
             labelField: null,
@@ -616,28 +670,32 @@ export default class SoqlQueryBuilder extends LightningElement {
         };
 
         if (this.isRawMode) {
-            soqlValue = this.rawQuery;
+            detail.value = this.rawQuery;
         } else {
             const state = this._buildState();
-            soqlValue = buildSoql(state, this.profile) || '';
+            detail.value = buildSoql(state, this.profile) || '';
         }
-        detail.value = soqlValue;
 
+        // Auto-populate chart config fields from field positions
         if (!this.isRawMode) {
-            const profile = this.profile;
-            for (let i = 0; i < profile.slots.length; i++) {
-                const slot = profile.slots[i];
-                const field = this.fields[i];
-                if (!field || !field.fieldName) continue;
-                if (slot.key === 'label') {
-                    detail.labelField = field.fieldName;
-                } else if (slot.key === 'value') {
-                    detail.valueField = field.alias || field.fieldName;
-                } else if (slot.key === 'series') {
-                    detail.seriesField = field.fieldName;
-                } else if (slot.key === 'secondaryValue') {
-                    detail.secondaryValueField = field.alias || field.fieldName;
-                }
+            const categories = this.fields.filter(f => f.fieldName && !f.aggregate);
+            const measures = this.fields.filter(f => f.fieldName && f.aggregate);
+
+            // First category -> labelField
+            if (categories.length > 0) {
+                detail.labelField = categories[0].fieldName;
+            }
+            // First measure -> valueField (by alias)
+            if (measures.length > 0) {
+                detail.valueField = measures[0].alias || measures[0].fieldName;
+            }
+            // Second category -> seriesField
+            if (categories.length > 1) {
+                detail.seriesField = categories[1].fieldName;
+            }
+            // Second measure -> secondaryValueField (by alias)
+            if (measures.length > 1) {
+                detail.secondaryValueField = measures[1].alias || measures[1].fieldName;
             }
         }
 

@@ -211,17 +211,16 @@ export function parseSoql(soqlString) {
 export function buildSoql(state, profile) {
     if (!state.objectName) return null;
 
-    // Validate required slots have fields
     const slotFields = state.fields || [];
-    for (let i = 0; i < profile.slots.length; i++) {
-        const slot = profile.slots[i];
-        const field = slotFields[i];
-        if (slot.required && (!field || !field.fieldName)) {
-            return null;
-        }
-        if (slot.requireAggregate && field && field.fieldName && !field.aggregate) {
-            return null;
-        }
+
+    // Must have at least one field with a name
+    const populatedFields = slotFields.filter(f => f && f.fieldName);
+    if (populatedFields.length === 0) return null;
+
+    // Single-mode gauges require the first field to have an aggregate
+    if (profile.mode === 'single') {
+        const first = slotFields[0];
+        if (!first || !first.fieldName || !first.aggregate) return null;
     }
 
     // SELECT
