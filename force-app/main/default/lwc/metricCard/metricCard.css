@@ -16,12 +16,14 @@
     height: 2.5rem;
     border-radius: var(--slds-g-radius-border-3, 0.5rem);
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .icon-pill_standard {
     --slds-c-icon-color-background: transparent;
     --slds-c-icon-color-foreground-default: var(--slds-g-color-surface-1, #ffffff);
     --slds-c-icon-color-foreground: var(--slds-g-color-surface-1, #ffffff);
+    --slds-c-icon-radius-border: 0;
 }
 
 .card-body {
