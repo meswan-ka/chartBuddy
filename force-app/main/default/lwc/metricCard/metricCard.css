@@ -1,0 +1,85 @@
+.card-container {
+    padding: var(--slds-g-spacing-2, 0.5rem);
+}
+
+.card-layout {
+    display: flex;
+    align-items: center;
+    gap: var(--slds-g-spacing-3, 0.75rem);
+}
+
+.icon-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--slds-g-radius-border-3, 0.5rem);
+    flex-shrink: 0;
+}
+
+.card-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-label {
+    font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+    color: var(--slds-g-color-on-surface-2, #706e6b);
+    font-weight: var(--slds-g-font-weight-5, 500);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-metric-row {
+    display: flex;
+    align-items: center;
+    gap: var(--slds-g-spacing-3, 0.75rem);
+    margin-top: var(--slds-g-spacing-1, 0.25rem);
+}
+
+.card-value {
+    font-size: 1.25rem;
+    font-weight: var(--slds-g-font-weight-7, 700);
+    color: var(--slds-g-color-on-surface-1, #181818);
+    line-height: 1;
+}
+
+.trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+    font-weight: var(--slds-g-font-weight-6, 600);
+    line-height: 1;
+}
+
+.trend-positive {
+    color: var(--slds-g-color-success-1, #2e844a);
+    --slds-c-icon-color-foreground-default: var(--slds-g-color-success-1, #2e844a);
+}
+
+.trend-negative {
+    color: var(--slds-g-color-error-1, #c23934);
+    --slds-c-icon-color-foreground-default: var(--slds-g-color-error-1, #c23934);
+}
+
+.trend-text {
+    white-space: nowrap;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+}
+
+.error-message {
+    color: var(--slds-g-color-error-1, #c23934);
+    font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+    text-align: center;
+    padding: var(--slds-g-spacing-2, 0.5rem);
+}

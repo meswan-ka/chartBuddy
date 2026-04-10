@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage">
+            <property name="chartTitle" type="String" label="Title" />
+            <property name="query" type="String" label="SOQL Query" description="Single aggregate query for the metric value" />
+            <property name="valuePrefix" type="String" label="Value Prefix" />
+            <property name="valueSuffix" type="String" label="Value Suffix" />
+            <property name="iconName" type="String" label="Icon Name" default="utility:analytics" />
+            <property name="iconColor" type="String" label="Icon Background Color" default="#4ecdc4" />
+            <property name="trendQuery" type="String" label="Trend Query" description="Optional single aggregate query for trend delta" />
+            <property name="trendSuffix" type="String" label="Trend Suffix" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

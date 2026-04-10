@@ -166,6 +166,12 @@ const BUILDER_PROFILES = {
         autoGroupBy: true,
         showOrderBy: false,
         showLimit: true
+    },
+    metricCard: {
+        mode: 'single',
+        autoGroupBy: false,
+        showOrderBy: false,
+        showLimit: false
     }
 };
 
@@ -807,7 +813,8 @@ export default class SoqlQueryBuilder extends LightningElement {
             waterfallChart: 'Add a Group By field for each step and a Measure for the step value.',
             flatGauge: 'Select the field and aggregate function that produces the gauge value.',
             polarGauge: 'Select the field and aggregate function that produces the gauge value.',
-            ratingsChart: 'Select the field and aggregate function that produces the rating value.'
+            ratingsChart: 'Select the field and aggregate function that produces the rating value.',
+            metricCard: 'Select the field and aggregate function that produces the card metric value.'
         };
         return hints[this._chartType] || '';
     }

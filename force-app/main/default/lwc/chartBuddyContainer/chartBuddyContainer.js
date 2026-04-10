@@ -9,7 +9,8 @@ const VALID_CHART_TYPES = new Set([
     'polarGauge',
     'ratingsChart',
     'pipelineChart',
-    'waterfallChart'
+    'waterfallChart',
+    'metricCard'
 ]);
 
 const MAX_COLUMNS = 12;
@@ -90,7 +91,8 @@ export default class ChartBuddyContainer extends LightningElement {
                 isPolarGauge: col.chartType === 'polarGauge',
                 isRatingsChart: col.chartType === 'ratingsChart',
                 isPipelineChart: col.chartType === 'pipelineChart',
-                isWaterfallChart: col.chartType === 'waterfallChart'
+                isWaterfallChart: col.chartType === 'waterfallChart',
+                isMetricCard: col.chartType === 'metricCard'
             }));
 
         if (this.columns.length === 0) {

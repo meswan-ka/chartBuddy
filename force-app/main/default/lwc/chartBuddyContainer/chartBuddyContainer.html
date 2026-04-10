@@ -103,6 +103,20 @@
                                 </c-waterfall-chart>
                             </template>
 
+                            <template lwc:if={col.isMetricCard}>
+                                <c-metric-card
+                                    chart-title={col.config.chartTitle}
+                                    query={col.config.query}
+                                    value-prefix={col.config.valuePrefix}
+                                    value-suffix={col.config.valueSuffix}
+                                    icon-name={col.config.iconName}
+                                    icon-color={col.config.iconColor}
+                                    trend-query={col.config.trendQuery}
+                                    trend-suffix={col.config.trendSuffix}
+                                    record-id={recordId}>
+                                </c-metric-card>
+                            </template>
+
                         </lightning-layout-item>
                     </template>
                 </lightning-layout>

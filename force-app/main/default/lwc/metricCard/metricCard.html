@@ -1,0 +1,42 @@
+<template>
+    <div class="card-container">
+        <template lwc:if={hasData}>
+            <div class="card-layout">
+                <div class="icon-pill" style={iconBackgroundStyle}>
+                    <lightning-icon
+                        icon-name={iconName}
+                        size="small"
+                        variant={iconVariant}
+                    ></lightning-icon>
+                </div>
+                <div class="card-body">
+                    <template lwc:if={chartTitle}>
+                        <div class="card-label">{chartTitle}</div>
+                    </template>
+                    <div class="card-metric-row">
+                        <span class="card-value">{formattedValue}</span>
+                        <template lwc:if={hasTrend}>
+                            <span class={trendClass}>
+                                <lightning-icon
+                                    icon-name={trendIconName}
+                                    size="xx-small"
+                                ></lightning-icon>
+                                <span class="trend-text">{trendText}</span>
+                            </span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template lwc:if={isLoading}>
+            <div class="loading">
+                <lightning-spinner alternative-text="Loading metric" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template lwc:if={errorMessage}>
+            <div class="error-message">{errorMessage}</div>
+        </template>
+    </div>
+</template>

@@ -502,6 +502,46 @@
                                     ></lightning-combobox>
                                 </template>
 
+                                <!-- metricCard fields -->
+                                <template lwc:if={col.isMetricCard}>
+                                    <lightning-input
+                                        label="Icon Name"
+                                        value={col.config.iconName}
+                                        data-id={col.id}
+                                        data-field="iconName"
+                                        onchange={handleColumnConfigChange}
+                                        placeholder="e.g. standard:people"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                    <lightning-input
+                                        label="Icon Background Color"
+                                        value={col.config.iconColor}
+                                        type="color"
+                                        data-id={col.id}
+                                        data-field="iconColor"
+                                        onchange={handleColumnConfigChange}
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                    <lightning-textarea
+                                        label="Trend Query (optional)"
+                                        value={col.config.trendQuery}
+                                        data-id={col.id}
+                                        data-field="trendQuery"
+                                        onchange={handleColumnConfigChange}
+                                        placeholder="SELECT COUNT(Id) FROM Contact WHERE AccountId = :recordId AND CreatedDate = THIS_WEEK"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-textarea>
+                                    <lightning-input
+                                        label="Trend Suffix"
+                                        value={col.config.trendSuffix}
+                                        data-id={col.id}
+                                        data-field="trendSuffix"
+                                        onchange={handleColumnConfigChange}
+                                        placeholder="e.g. this week"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                </template>
+
                                 <!-- Shared: Value Prefix/Suffix -->
                                 <template lwc:if={col.showValuePrefix}>
                                     <div class="slds-grid slds-gutters slds-m-bottom_small">
@@ -674,6 +714,20 @@
                                             height={col.config.height}
                                             record-id={contextRecordId}>
                                         </c-waterfall-chart>
+                                    </template>
+
+                                    <template lwc:if={col.isMetricCard}>
+                                        <c-metric-card
+                                            chart-title={col.config.chartTitle}
+                                            query={col.config.query}
+                                            value-prefix={col.config.valuePrefix}
+                                            value-suffix={col.config.valueSuffix}
+                                            icon-name={col.config.iconName}
+                                            icon-color={col.config.iconColor}
+                                            trend-query={col.config.trendQuery}
+                                            trend-suffix={col.config.trendSuffix}
+                                            record-id={contextRecordId}>
+                                        </c-metric-card>
                                     </template>
 
                                 </template>

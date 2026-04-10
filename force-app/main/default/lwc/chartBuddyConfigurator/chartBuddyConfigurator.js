@@ -13,7 +13,8 @@ const CHART_TYPE_OPTIONS = [
     { label: 'Polar Gauge', value: 'polarGauge' },
     { label: 'Ratings Chart', value: 'ratingsChart' },
     { label: 'Pipeline Chart', value: 'pipelineChart' },
-    { label: 'Waterfall Chart', value: 'waterfallChart' }
+    { label: 'Waterfall Chart', value: 'waterfallChart' },
+    { label: 'Metric Card', value: 'metricCard' }
 ];
 
 const CHART_TYPE_LABEL_MAP = CHART_TYPE_OPTIONS.reduce((map, opt) => {
@@ -28,7 +29,8 @@ const CHART_ICON_MAP = {
     polarGauge: 'utility:target',
     ratingsChart: 'utility:favorite',
     pipelineChart: 'utility:filter',
-    waterfallChart: 'utility:waterfall_chart'
+    waterfallChart: 'utility:waterfall_chart',
+    metricCard: 'utility:number_input'
 };
 
 const ORIENTATION_OPTIONS = [
@@ -52,8 +54,8 @@ const WIDTH_OPTIONS = Array.from({ length: 12 }, (_, i) => ({
     value: String(i + 1)
 }));
 
-const TYPES_WITH_PREFIX = new Set(['barChart', 'lineChart', 'flatGauge', 'pipelineChart', 'waterfallChart']);
-const TYPES_WITH_SUFFIX = new Set(['barChart', 'lineChart', 'flatGauge', 'polarGauge', 'pipelineChart', 'waterfallChart']);
+const TYPES_WITH_PREFIX = new Set(['barChart', 'lineChart', 'flatGauge', 'pipelineChart', 'waterfallChart', 'metricCard']);
+const TYPES_WITH_SUFFIX = new Set(['barChart', 'lineChart', 'flatGauge', 'polarGauge', 'pipelineChart', 'waterfallChart', 'metricCard']);
 const TYPES_WITH_HEIGHT = new Set(['barChart', 'lineChart', 'waterfallChart']);
 
 const DEFAULT_CONFIGS = {
@@ -80,6 +82,11 @@ const DEFAULT_CONFIGS = {
     },
     waterfallChart: {
         chartTitle: '', query: '', mode: 'delta', valuePrefix: '$', valueSuffix: '', height: 300
+    },
+    metricCard: {
+        chartTitle: '', query: '', valuePrefix: '', valueSuffix: '',
+        iconName: 'utility:analytics', iconColor: '#4ecdc4',
+        trendQuery: '', trendSuffix: ''
     }
 };
 
@@ -182,6 +189,7 @@ export default class ChartBuddyConfigurator extends LightningElement {
                 isRatingsChart: chartType === 'ratingsChart',
                 isPipelineChart: chartType === 'pipelineChart',
                 isWaterfallChart: chartType === 'waterfallChart',
+                isMetricCard: chartType === 'metricCard',
                 showValuePrefix: showPrefix,
                 showValueSuffix: showPrefix && showSuffix,
                 showValueSuffixOnly: !showPrefix && showSuffix,
