@@ -177,15 +177,14 @@
                                     class="slds-m-bottom_small"
                                 ></lightning-input>
 
-                                <lightning-textarea
-                                    label="Query"
-                                    value={col.config.query}
+                                <c-soql-query-builder
+                                    chart-type={col.chartType}
+                                    query={col.config.query}
                                     data-id={col.id}
                                     data-field="query"
-                                    onchange={handleColumnConfigChange}
+                                    onquerychange={handleColumnConfigChange}
                                     class="slds-m-bottom_small"
-                                    field-level-help="Use :recordId for current record binding"
-                                ></lightning-textarea>
+                                ></c-soql-query-builder>
 
                                 <!-- barChart fields -->
                                 <template lwc:if={col.isBarChart}>

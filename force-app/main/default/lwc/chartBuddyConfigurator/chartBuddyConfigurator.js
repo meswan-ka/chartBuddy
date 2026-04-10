@@ -342,7 +342,14 @@ export default class ChartBuddyConfigurator extends LightningElement {
         const value = event.detail?.value !== undefined ? event.detail.value : event.target.value;
         this.columns = this.columns.map(c => {
             if (c.id !== colId) return c;
-            return { ...c, config: { ...c.config, [field]: value } };
+            const updatedConfig = { ...c.config, [field]: value };
+            if (field === 'query' && event.detail) {
+                if (event.detail.labelField !== undefined) updatedConfig.labelField = event.detail.labelField;
+                if (event.detail.valueField !== undefined) updatedConfig.valueField = event.detail.valueField;
+                if (event.detail.seriesField !== undefined) updatedConfig.seriesField = event.detail.seriesField;
+                if (event.detail.secondaryValueField !== undefined) updatedConfig.secondaryValueField = event.detail.secondaryValueField;
+            }
+            return { ...c, config: updatedConfig };
         });
     }
 
