@@ -2,11 +2,11 @@
     <div class="card-container">
         <template lwc:if={hasData}>
             <div class="card-layout">
-                <div class={iconPillClass} style={iconBackgroundStyle}>
+                <div class="icon-pill" style={iconBackgroundStyle}>
                     <lightning-icon
-                        icon-name={iconName}
+                        icon-name={resolvedIconName}
                         size="small"
-                        variant={iconVariant}
+                        variant="inverse"
                     ></lightning-icon>
                 </div>
                 <div class="card-body">

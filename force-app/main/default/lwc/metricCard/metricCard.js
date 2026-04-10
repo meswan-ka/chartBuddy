@@ -107,15 +107,12 @@ export default class MetricCard extends LightningElement {
         return `background-color: ${color};`;
     }
 
-    get iconVariant() {
-        return this.iconName && this.iconName.startsWith('utility:') ? 'inverse' : undefined;
-    }
-
-    get iconPillClass() {
-        const base = 'icon-pill';
-        if (this.iconName && !this.iconName.startsWith('utility:')) {
-            return base + ' icon-pill_standard';
+    get resolvedIconName() {
+        const name = this.iconName || 'utility:analytics';
+        const parts = name.split(':');
+        if (parts.length === 2 && parts[0] !== 'utility') {
+            return 'utility:' + parts[1];
         }
-        return base;
+        return name;
     }
 }
