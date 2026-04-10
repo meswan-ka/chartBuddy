@@ -28,6 +28,7 @@ export default class PipelineChart extends LightningElement {
         if (data) {
             this._data = data;
             this._error = undefined;
+            this._gradientsSynced = false;
         } else if (error) {
             this._error = error;
             this._data = [];
