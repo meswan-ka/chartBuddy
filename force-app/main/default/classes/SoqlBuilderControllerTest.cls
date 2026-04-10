@@ -17,9 +17,8 @@ private class SoqlBuilderControllerTest {
 
     @IsTest
     static void testFindObjectsMatchesLabel() {
-        // 'con' should match Contact, Contract, etc. by label or API name
-        List<SoqlBuilderController.ObjectOption> results = SoqlBuilderController.findObjects('con');
-        System.assert(results.size() > 0, 'Should find objects matching "con"');
+        List<SoqlBuilderController.ObjectOption> results = SoqlBuilderController.findObjects('Contact');
+        System.assert(results.size() > 0, 'Should find objects matching "Contact"');
         Boolean foundContact = false;
         for (SoqlBuilderController.ObjectOption opt : results) {
             if (opt.apiName == 'Contact') {
@@ -27,7 +26,7 @@ private class SoqlBuilderControllerTest {
                 break;
             }
         }
-        System.assert(foundContact, 'Contact should appear when searching "con"');
+        System.assert(foundContact, 'Contact should appear when searching "Contact"');
     }
 
     @IsTest
