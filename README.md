@@ -1,6 +1,6 @@
 # chartBuddy
 
-SLDS 2 chart components for Salesforce Lightning. Seven SVG-based LWCs that replicate Lightning Design System chart patterns with composable SOQL data sources and locale-aware currency formatting.
+SLDS 2 chart components for Salesforce Lightning. Eight SVG-based LWCs and a KPI metric card that replicate Lightning Design System chart patterns with composable SOQL data sources and locale-aware currency formatting.
 
 Drop any chart onto a Record Page or App Page, point it at a query, and it renders -- no code required.
 
@@ -17,6 +17,7 @@ Drop any chart onto a Record Page or App Page, point it at a query, and it rende
 | `c-ratings-chart` | Ratings | Dot-based rating out of a configurable maximum |
 | `c-pipeline-chart` | Origami / Funnel | Pipeline stage breakdown with descending trapezoids |
 | `c-waterfall-chart` | Waterfall | Stage-by-stage changes showing increases and decreases |
+| `c-metric-card` | KPI Card | Single metric with icon, trend indicator, and optional baseline comparison |
 
 ---
 
@@ -76,8 +77,9 @@ All charts use a shared Apex controller (`ChartQueryController`) that executes S
 | Method | Returns | Used By |
 |--------|---------|---------|
 | `executeQuery(query, recordId)` | `List<ChartDataPoint>` | pipelineChart, waterfallChart |
+| `executeQueryWithPicklistSort(query, recordId, objectApiName, picklistFieldName)` | `List<ChartDataPoint>` | pipelineChart (auto-detects object and picklist from query) |
 | `executeRawQuery(query, recordId)` | `List<Map<String, Object>>` | barChart, lineChart |
-| `executeSingleValueQuery(query, recordId)` | `Double` | flatGauge, polarGauge, ratingsChart |
+| `executeSingleValueQuery(query, recordId)` | `Double` | flatGauge, polarGauge, ratingsChart, metricCard |
 
 ### Query Binding
 
@@ -90,7 +92,7 @@ FROM Opportunity
 WHERE AccountId = :recordId
 GROUP BY StageName
 
--- Single-value query (flatGauge, polarGauge)
+-- Single-value query (flatGauge, polarGauge, metricCard)
 SELECT SUM(Amount) total
 FROM Opportunity
 WHERE AccountId = :recordId
@@ -137,7 +139,7 @@ Horizontal bars or vertical columns. Supports simple, stacked, and grouped varia
 | `variant` | String | `simple` | `simple`, `stacked`, or `grouped` |
 | `valuePrefix` | String | | Value prefix (`$`, `currency`, or literal text) |
 | `valueSuffix` | String | | Value suffix (`M`, `%`, etc.) |
-| `height` | Integer | `300` | Chart height in pixels |
+| `height` | Integer | `150` | Chart height in pixels |
 
 **Stacked/Grouped**: Set `seriesField` to a grouping field. The query must return rows with label, series, and value columns:
 
@@ -166,7 +168,7 @@ Single or dual-axis line chart with optional area fill beneath the lines.
 | `valueSuffix` | String | | Primary axis suffix |
 | `secondaryPrefix` | String | | Secondary axis prefix |
 | `secondarySuffix` | String | | Secondary axis suffix |
-| `height` | Integer | `300` | Chart height in pixels |
+| `height` | Integer | `150` | Chart height in pixels |
 
 **Dual Axis**: Set `secondaryValueField` to a second numeric column from the same query. The chart renders independent Y-axis scales on left and right.
 
@@ -235,7 +237,7 @@ The query result is rounded to determine how many dots are filled (blue). Remain
 
 ### c-pipeline-chart
 
-Origami-style horizontal funnel with descending trapezoid shapes. Colors interpolate from dark blue to green across stages.
+Origami-style horizontal funnel with descending trapezoid shapes. Colors interpolate from dark blue to green across stages. The object name and picklist field are auto-detected from the query's `FROM` and `GROUP BY` clauses to sort stages in picklist order. When the query returns no data, a ghost skeleton with "Not enough data to draw this chart." is shown.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -251,10 +253,9 @@ SELECT StageName, SUM(Amount) total
 FROM Opportunity
 WHERE AccountId = :recordId
 GROUP BY StageName
-ORDER BY SUM(Amount) DESC
 ```
 
-Stage names appear above each trapezoid. Dollar values render centered inside each shape in white.
+Stage names appear above each trapezoid. Dollar values render centered inside each shape in white. Stages are automatically sorted by picklist order (e.g. Prospecting, Qualification, Proposal, Closed Won).
 
 ---
 
@@ -269,11 +270,42 @@ Floating bar chart showing how values change across stages. Start and end bars a
 | `mode` | String | `delta` | `delta` (raw changes) or `cumulative` (running totals) |
 | `valuePrefix` | String | `$` | Y-axis value prefix |
 | `valueSuffix` | String | | Y-axis value suffix |
-| `height` | Integer | `300` | Chart height in pixels |
+| `height` | Integer | `150` | Chart height in pixels |
 
 **Delta mode**: First and last rows are anchor totals. Middle rows are positive/negative deltas.
 
 **Cumulative mode**: Each row is a running total. The component computes deltas between consecutive values.
+
+---
+
+### c-metric-card
+
+Compact KPI card with a colored icon pill, large metric value, and optional trend indicator. The trend is computed as the delta between the main query result and a baseline query result.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `chartTitle` | String | | Label above the metric value |
+| `query` | String | | SOQL returning a single numeric value |
+| `valuePrefix` | String | | Value prefix (`$`, `currency`, or literal text) |
+| `valueSuffix` | String | | Value suffix (`K`, `%`, etc.) |
+| `iconName` | String | `utility:analytics` | SLDS icon name (any category; non-utility icons are resolved to their utility equivalent) |
+| `iconColor` | String | `#4ecdc4` | Hex color for the icon background pill |
+| `trendQuery` | String | | Optional SOQL returning a baseline value for trend calculation |
+| `trendSuffix` | String | | Suffix for the trend delta display |
+
+**Trend behavior**: The component computes `delta = mainValue - baselineValue`. A positive delta shows a green up arrow; a negative delta shows a red down arrow. Zero delta hides the indicator.
+
+**Icon handling**: All icon names are resolved to `utility:*` for consistent rendering as a white silhouette on the colored pill. If you enter `standard:case`, it renders as `utility:case`.
+
+**Example**: Contact count with weekly trend:
+
+```
+Query: SELECT COUNT(Id) FROM Contact WHERE AccountId = :recordId
+Icon Name: utility:people
+Icon Color: #4ecdc4
+Trend Query: SELECT COUNT(Id) FROM Contact WHERE AccountId = :recordId AND CreatedDate < THIS_WEEK
+Trend Suffix: this week
+```
 
 ---
 
@@ -325,6 +357,8 @@ chartBuddy/
       ratingsChart/                     Dot-based rating
       pipelineChart/                    Origami funnel
       waterfallChart/                   Waterfall chart
+      metricCard/                       KPI metric card
+      soqlQueryBuilder/                 SOQL query builder (configurator sub-component)
 ```
 
 ---
@@ -369,7 +403,7 @@ Two-panel layout:
 - Remove Column
 - Move Up / Move Down (reorder)
 - Expand/collapse each column's settings
-- Chart type selector (all 7 types)
+- Chart type selector (all 8 chart types + metric card)
 - Width selector (1-12 grid units)
 - Chart-specific config fields rendered dynamically based on type
 
@@ -398,6 +432,7 @@ The container:
 ```json
 {
   "containerTitle": "Account Analytics Dashboard",
+  "colorTheme": "salesforce",
   "columns": [
     {
       "id": "col-1",
@@ -412,7 +447,7 @@ The container:
         "variant": "simple",
         "valuePrefix": "$",
         "valueSuffix": "",
-        "height": 300
+        "height": 150
       }
     },
     {
