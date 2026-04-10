@@ -13,21 +13,111 @@ const AGGREGATE_OPTIONS = [
 ];
 
 const OPERATOR_OPTIONS = [
-    { label: '= equals', value: '=' },
-    { label: '!= not equal', value: '!=' },
-    { label: '> greater than', value: '>' },
-    { label: '< less than', value: '<' },
-    { label: '>= at least', value: '>=' },
-    { label: '<= at most', value: '<=' },
-    { label: 'LIKE contains', value: 'LIKE' },
-    { label: 'IN one of', value: 'IN' },
-    { label: 'NOT IN none of', value: 'NOT IN' }
+    { label: 'Equals', value: '=' },
+    { label: 'Does Not Equal', value: '!=' },
+    { label: 'Less Than', value: '<' },
+    { label: 'Less Than Or Equal To', value: '<=' },
+    { label: 'Greater Than', value: '>' },
+    { label: 'Greater Than Or Equal To', value: '>=' },
+    { label: 'Contains', value: 'CONTAINS' },
+    { label: 'Does Not Contain', value: 'NOT_CONTAINS' },
+    { label: 'Starts With', value: 'STARTS_WITH' },
+    { label: 'Does Not Start With', value: 'NOT_STARTS_WITH' },
+    { label: 'Ends With', value: 'ENDS_WITH' },
+    { label: 'Does Not End With', value: 'NOT_ENDS_WITH' },
+    { label: 'Is Null', value: 'IS_NULL' },
+    { label: 'Is Not Null', value: 'IS_NOT_NULL' },
+    { label: 'In', value: 'IN' },
+    { label: 'Not In', value: 'NOT IN' },
+    { label: 'Includes', value: 'INCLUDES' },
+    { label: 'Excludes', value: 'EXCLUDES' }
 ];
+
+// Operators that don't need a value input
+const NO_VALUE_OPERATORS = new Set(['IS_NULL', 'IS_NOT_NULL']);
 
 const DIRECTION_OPTIONS = [
     { label: 'Ascending', value: 'ASC' },
     { label: 'Descending', value: 'DESC' }
 ];
+
+const VALUE_TYPE_OPTIONS = [
+    { label: 'Literal', value: 'literal' },
+    { label: 'Date/Time', value: 'date' }
+];
+
+const DATE_LITERAL_OPTIONS = [
+    { label: 'TODAY', value: 'TODAY' },
+    { label: 'YESTERDAY', value: 'YESTERDAY' },
+    { label: 'TOMORROW', value: 'TOMORROW' },
+    { label: 'THIS_WEEK', value: 'THIS_WEEK' },
+    { label: 'LAST_WEEK', value: 'LAST_WEEK' },
+    { label: 'NEXT_WEEK', value: 'NEXT_WEEK' },
+    { label: 'THIS_MONTH', value: 'THIS_MONTH' },
+    { label: 'LAST_MONTH', value: 'LAST_MONTH' },
+    { label: 'NEXT_MONTH', value: 'NEXT_MONTH' },
+    { label: 'THIS_QUARTER', value: 'THIS_QUARTER' },
+    { label: 'LAST_QUARTER', value: 'LAST_QUARTER' },
+    { label: 'NEXT_QUARTER', value: 'NEXT_QUARTER' },
+    { label: 'THIS_YEAR', value: 'THIS_YEAR' },
+    { label: 'LAST_YEAR', value: 'LAST_YEAR' },
+    { label: 'NEXT_YEAR', value: 'NEXT_YEAR' },
+    { label: 'THIS_FISCAL_QUARTER', value: 'THIS_FISCAL_QUARTER' },
+    { label: 'LAST_FISCAL_QUARTER', value: 'LAST_FISCAL_QUARTER' },
+    { label: 'NEXT_FISCAL_QUARTER', value: 'NEXT_FISCAL_QUARTER' },
+    { label: 'THIS_FISCAL_YEAR', value: 'THIS_FISCAL_YEAR' },
+    { label: 'LAST_FISCAL_YEAR', value: 'LAST_FISCAL_YEAR' },
+    { label: 'NEXT_FISCAL_YEAR', value: 'NEXT_FISCAL_YEAR' },
+    { label: 'LAST_N_DAYS:n', value: 'LAST_N_DAYS:' },
+    { label: 'NEXT_N_DAYS:n', value: 'NEXT_N_DAYS:' },
+    { label: 'LAST_N_WEEKS:n', value: 'LAST_N_WEEKS:' },
+    { label: 'NEXT_N_WEEKS:n', value: 'NEXT_N_WEEKS:' },
+    { label: 'LAST_N_MONTHS:n', value: 'LAST_N_MONTHS:' },
+    { label: 'NEXT_N_MONTHS:n', value: 'NEXT_N_MONTHS:' },
+    { label: 'LAST_N_QUARTERS:n', value: 'LAST_N_QUARTERS:' },
+    { label: 'NEXT_N_QUARTERS:n', value: 'NEXT_N_QUARTERS:' },
+    { label: 'LAST_N_YEARS:n', value: 'LAST_N_YEARS:' },
+    { label: 'NEXT_N_YEARS:n', value: 'NEXT_N_YEARS:' },
+    { label: 'LAST_N_FISCAL_QUARTERS:n', value: 'LAST_N_FISCAL_QUARTERS:' },
+    { label: 'NEXT_N_FISCAL_QUARTERS:n', value: 'NEXT_N_FISCAL_QUARTERS:' },
+    { label: 'LAST_N_FISCAL_YEARS:n', value: 'LAST_N_FISCAL_YEARS:' },
+    { label: 'NEXT_N_FISCAL_YEARS:n', value: 'NEXT_N_FISCAL_YEARS:' }
+];
+
+// Date literals that are simple keywords (no :n parameter)
+const SIMPLE_DATE_LITERALS = new Set([
+    'TODAY', 'YESTERDAY', 'TOMORROW',
+    'THIS_WEEK', 'LAST_WEEK', 'NEXT_WEEK',
+    'THIS_MONTH', 'LAST_MONTH', 'NEXT_MONTH',
+    'THIS_QUARTER', 'LAST_QUARTER', 'NEXT_QUARTER',
+    'THIS_YEAR', 'LAST_YEAR', 'NEXT_YEAR',
+    'THIS_FISCAL_QUARTER', 'LAST_FISCAL_QUARTER', 'NEXT_FISCAL_QUARTER',
+    'THIS_FISCAL_YEAR', 'LAST_FISCAL_YEAR', 'NEXT_FISCAL_YEAR'
+]);
+
+// All known date literal prefixes (for auto-detecting type from parsed values)
+const DATE_LITERAL_PREFIXES = [
+    'TODAY', 'YESTERDAY', 'TOMORROW',
+    'THIS_WEEK', 'LAST_WEEK', 'NEXT_WEEK',
+    'THIS_MONTH', 'LAST_MONTH', 'NEXT_MONTH',
+    'THIS_QUARTER', 'LAST_QUARTER', 'NEXT_QUARTER',
+    'THIS_YEAR', 'LAST_YEAR', 'NEXT_YEAR',
+    'THIS_FISCAL_QUARTER', 'LAST_FISCAL_QUARTER', 'NEXT_FISCAL_QUARTER',
+    'THIS_FISCAL_YEAR', 'LAST_FISCAL_YEAR', 'NEXT_FISCAL_YEAR',
+    'LAST_N_DAYS:', 'NEXT_N_DAYS:',
+    'LAST_N_WEEKS:', 'NEXT_N_WEEKS:',
+    'LAST_N_MONTHS:', 'NEXT_N_MONTHS:',
+    'LAST_N_QUARTERS:', 'NEXT_N_QUARTERS:',
+    'LAST_N_YEARS:', 'NEXT_N_YEARS:',
+    'LAST_N_FISCAL_QUARTERS:', 'NEXT_N_FISCAL_QUARTERS:',
+    'LAST_N_FISCAL_YEARS:', 'NEXT_N_FISCAL_YEARS:'
+];
+
+function isDateLiteral(value) {
+    if (!value) return false;
+    const upper = value.toUpperCase().trim();
+    return DATE_LITERAL_PREFIXES.some(p => upper === p || upper.startsWith(p));
+}
 
 /**
  * Chart profiles control the field-editing mode and clause visibility.
@@ -193,6 +283,14 @@ export default class SoqlQueryBuilder extends LightningElement {
         return DIRECTION_OPTIONS;
     }
 
+    get valueTypeOptions() {
+        return VALUE_TYPE_OPTIONS;
+    }
+
+    get dateLiteralOptions() {
+        return DATE_LITERAL_OPTIONS;
+    }
+
     get showOrderBy() {
         return this.profile.showOrderBy;
     }
@@ -225,11 +323,37 @@ export default class SoqlQueryBuilder extends LightningElement {
     }
 
     get renderedWhereConditions() {
-        return this.whereConditions.map((cond, idx) => ({
-            ...cond,
-            index: idx,
-            id: 'where-' + idx
-        }));
+        return this.whereConditions.map((cond, idx) => {
+            const vt = cond.valueType || 'literal';
+            const isDate = vt === 'date';
+            // For N-type date literals (e.g. LAST_N_DAYS:30), split into base + n
+            let dateLiteralBase = '';
+            let dateLiteralN = '';
+            let needsN = false;
+            if (isDate && cond.value) {
+                const colonIdx = cond.value.indexOf(':');
+                if (colonIdx > -1) {
+                    dateLiteralBase = cond.value.substring(0, colonIdx + 1);
+                    dateLiteralN = cond.value.substring(colonIdx + 1);
+                    needsN = true;
+                } else {
+                    dateLiteralBase = cond.value;
+                    needsN = !SIMPLE_DATE_LITERALS.has(cond.value.toUpperCase());
+                }
+            }
+            return {
+                ...cond,
+                index: idx,
+                id: 'where-' + idx,
+                valueType: vt,
+                isDateValue: isDate,
+                isLiteralValue: !isDate,
+                dateLiteralBase,
+                dateLiteralN,
+                needsN,
+                needsValue: !NO_VALUE_OPERATORS.has(cond.operator)
+            };
+        });
     }
 
     get hasWhereConditions() {
@@ -420,7 +544,7 @@ export default class SoqlQueryBuilder extends LightningElement {
     handleAddWhereCondition() {
         this.whereConditions = [
             ...this.whereConditions,
-            { fieldName: '', operator: '=', value: '' }
+            { fieldName: '', operator: '=', value: '', valueType: 'literal' }
         ];
     }
 
@@ -434,8 +558,14 @@ export default class SoqlQueryBuilder extends LightningElement {
 
     handleWhereOperatorChange(event) {
         const idx = parseInt(event.currentTarget.dataset.index, 10);
+        const newOp = event.detail.value;
         const updated = [...this.whereConditions];
-        updated[idx] = { ...updated[idx], operator: event.detail.value };
+        const patch = { ...updated[idx], operator: newOp };
+        // Clear value when switching to null operators
+        if (NO_VALUE_OPERATORS.has(newOp)) {
+            patch.value = '';
+        }
+        updated[idx] = patch;
         this.whereConditions = updated;
         this._fireQueryChange();
     }
@@ -444,6 +574,43 @@ export default class SoqlQueryBuilder extends LightningElement {
         const idx = parseInt(event.currentTarget.dataset.index, 10);
         const updated = [...this.whereConditions];
         updated[idx] = { ...updated[idx], value: event.target.value };
+        this.whereConditions = updated;
+        this._fireQueryChange();
+    }
+
+    handleWhereValueTypeChange(event) {
+        const idx = parseInt(event.currentTarget.dataset.index, 10);
+        const updated = [...this.whereConditions];
+        updated[idx] = { ...updated[idx], valueType: event.detail.value, value: '' };
+        this.whereConditions = updated;
+        this._fireQueryChange();
+    }
+
+    handleWhereDateLiteralChange(event) {
+        const idx = parseInt(event.currentTarget.dataset.index, 10);
+        const literal = event.detail.value;
+        const updated = [...this.whereConditions];
+        // For N-type literals (ending with :), keep existing N value
+        if (literal.endsWith(':')) {
+            const existing = updated[idx].value || '';
+            const colonIdx = existing.indexOf(':');
+            const n = colonIdx > -1 ? existing.substring(colonIdx + 1) : '';
+            updated[idx] = { ...updated[idx], value: literal + n };
+        } else {
+            updated[idx] = { ...updated[idx], value: literal };
+        }
+        this.whereConditions = updated;
+        this._fireQueryChange();
+    }
+
+    handleWhereDateNChange(event) {
+        const idx = parseInt(event.currentTarget.dataset.index, 10);
+        const n = event.target.value;
+        const updated = [...this.whereConditions];
+        const existing = updated[idx].value || '';
+        const colonIdx = existing.indexOf(':');
+        const base = colonIdx > -1 ? existing.substring(0, colonIdx + 1) : existing;
+        updated[idx] = { ...updated[idx], value: base + n };
         this.whereConditions = updated;
         this._fireQueryChange();
     }

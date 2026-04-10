@@ -224,12 +224,20 @@
 }
 
 .where-operator {
-    flex: 0 0 8.5rem;
+    flex: 0 0 11rem;
+}
+
+.where-value-type {
+    flex: 0 0 5.5rem;
 }
 
 .where-value {
     flex: 4;
     min-width: 0;
+}
+
+.where-n {
+    flex: 0 0 3.5rem;
 }
 
 .where-remove {

@@ -259,16 +259,55 @@
                                     onchange={handleWhereOperatorChange}
                                 ></lightning-combobox>
                             </div>
-                            <div class="where-value">
-                                <lightning-input
-                                    label="Compare To"
-                                    variant="label-hidden"
-                                    value={cond.value}
-                                    data-index={cond.index}
-                                    onchange={handleWhereValueChange}
-                                    placeholder="Value or 'string'..."
-                                ></lightning-input>
-                            </div>
+                            <template lwc:if={cond.needsValue}>
+                                <div class="where-value-type">
+                                    <lightning-combobox
+                                        label="Value Type"
+                                        variant="label-hidden"
+                                        value={cond.valueType}
+                                        options={valueTypeOptions}
+                                        data-index={cond.index}
+                                        onchange={handleWhereValueTypeChange}
+                                    ></lightning-combobox>
+                                </div>
+                                <div class="where-value">
+                                    <template lwc:if={cond.isDateValue}>
+                                        <lightning-combobox
+                                            label="Date Literal"
+                                            variant="label-hidden"
+                                            value={cond.dateLiteralBase}
+                                            options={dateLiteralOptions}
+                                            data-index={cond.index}
+                                            onchange={handleWhereDateLiteralChange}
+                                            placeholder="Select date literal..."
+                                        ></lightning-combobox>
+                                    </template>
+                                    <template lwc:else>
+                                        <lightning-input
+                                            label="Compare To"
+                                            variant="label-hidden"
+                                            value={cond.value}
+                                            data-index={cond.index}
+                                            onchange={handleWhereValueChange}
+                                            placeholder="Value or 'string'..."
+                                        ></lightning-input>
+                                    </template>
+                                </div>
+                                <template lwc:if={cond.needsN}>
+                                    <div class="where-n">
+                                        <lightning-input
+                                            type="number"
+                                            label="N"
+                                            variant="label-hidden"
+                                            value={cond.dateLiteralN}
+                                            data-index={cond.index}
+                                            onchange={handleWhereDateNChange}
+                                            min="1"
+                                            placeholder="n"
+                                        ></lightning-input>
+                                    </div>
+                                </template>
+                            </template>
                             <div class="where-remove">
                                 <lightning-button-icon
                                     icon-name="utility:close"

@@ -203,6 +203,34 @@ export function parseSoql(soqlString) {
 }
 
 /**
+ * Translate a builder operator + value into a SOQL WHERE clause fragment.
+ * Handles LIKE patterns, null checks, and pass-through operators.
+ */
+function buildWhereClause(fieldName, operator, value) {
+    switch (operator) {
+        case 'IS_NULL':
+            return fieldName + ' = null';
+        case 'IS_NOT_NULL':
+            return fieldName + ' != null';
+        case 'CONTAINS':
+            return value ? fieldName + " LIKE '%" + value + "%'" : null;
+        case 'NOT_CONTAINS':
+            return value ? '(NOT ' + fieldName + " LIKE '%" + value + "%')" : null;
+        case 'STARTS_WITH':
+            return value ? fieldName + " LIKE '" + value + "%'" : null;
+        case 'NOT_STARTS_WITH':
+            return value ? '(NOT ' + fieldName + " LIKE '" + value + "%')" : null;
+        case 'ENDS_WITH':
+            return value ? fieldName + " LIKE '%" + value + "'" : null;
+        case 'NOT_ENDS_WITH':
+            return value ? '(NOT ' + fieldName + " LIKE '%" + value + "')" : null;
+        default:
+            // Standard operators: =, !=, <, <=, >, >=, IN, NOT IN, INCLUDES, EXCLUDES
+            return value ? fieldName + ' ' + operator + ' ' + value : null;
+    }
+}
+
+/**
  * Build a SOQL string from builder state.
  * @param {object} state - The builder state object
  * @param {object} profile - The active builder profile (from BUILDER_PROFILES)
@@ -245,8 +273,10 @@ export function buildSoql(state, profile) {
         whereParts.push(state.recordContextField + ' = :recordId');
     }
     for (const cond of (state.whereConditions || [])) {
-        if (cond.fieldName && cond.operator && cond.value) {
-            whereParts.push(cond.fieldName + ' ' + cond.operator + ' ' + cond.value);
+        if (!cond.fieldName || !cond.operator) continue;
+        const clause = buildWhereClause(cond.fieldName, cond.operator, cond.value);
+        if (clause) {
+            whereParts.push(clause);
         }
     }
     if (whereParts.length > 0) {
