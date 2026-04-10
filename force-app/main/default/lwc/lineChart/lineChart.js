@@ -23,7 +23,7 @@ const LINE_COLORS = [
 
 export default class LineChart extends LightningElement {
     @api chartTitle;
-    @api query;
+    @api query = '';
     @api labelField;
     @api valueField;
     @api secondaryValueField;
@@ -40,7 +40,7 @@ export default class LineChart extends LightningElement {
     @api secondaryPrefix = '';
     @api secondarySuffix = '';
     @api height = DEFAULT_HEIGHT;
-    @api recordId;
+    @api recordId = '';
 
     _rawData;
     _error;

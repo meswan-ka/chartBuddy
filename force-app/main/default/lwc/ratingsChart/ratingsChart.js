@@ -9,9 +9,9 @@ const DOT_CY = 16;
 
 export default class RatingsChart extends LightningElement {
     @api chartTitle;
-    @api query;
+    @api query = '';
     @api maxDots = 10;
-    @api recordId;
+    @api recordId = '';
 
     rawValue = null;
     error;

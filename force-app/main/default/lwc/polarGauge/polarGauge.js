@@ -12,10 +12,10 @@ const STROKE_WIDTH = 16;
 
 export default class PolarGauge extends LightningElement {
     @api chartTitle;
-    @api query;
+    @api query = '';
     @api maxValue = 100;
     @api valueSuffix = '%';
-    @api recordId;
+    @api recordId = '';
 
     rawValue = null;
     error;

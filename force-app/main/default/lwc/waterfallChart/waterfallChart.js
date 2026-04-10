@@ -12,12 +12,12 @@ const SVG_WIDTH = 500;
 
 export default class WaterfallChart extends LightningElement {
     @api chartTitle;
-    @api query;
+    @api query = '';
     @api mode = 'delta';
     @api valuePrefix = '$';
     @api valueSuffix;
     @api height = 300;
-    @api recordId;
+    @api recordId = '';
 
     _data = [];
     _error;

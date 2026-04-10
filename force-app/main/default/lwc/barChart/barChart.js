@@ -28,7 +28,7 @@ const GROUP_INNER_GAP = 2;
  */
 export default class BarChart extends LightningElement {
     @api chartTitle;
-    @api query;
+    @api query = '';
     @api labelField;
     @api valueField;
     @api seriesField;
@@ -37,7 +37,7 @@ export default class BarChart extends LightningElement {
     @api valuePrefix;
     @api valueSuffix;
     @api height = DEFAULT_HEIGHT;
-    @api recordId;
+    @api recordId = '';
 
     _rawData;
     _error;

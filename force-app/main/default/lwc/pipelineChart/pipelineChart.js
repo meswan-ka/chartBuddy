@@ -6,12 +6,12 @@ import { PIPELINE_COLORS, formatValue, isCurrencyPrefix, getCurrencySymbol } fro
 
 export default class PipelineChart extends LightningElement {
     @api chartTitle;
-    @api query;
+    @api query = '';
     @api valuePrefix = '$';
     @api valueSuffix = 'm';
     @api objectApiName = '';
     @api picklistField = '';
-    @api recordId;
+    @api recordId = '';
 
     _data = [];
     _error;

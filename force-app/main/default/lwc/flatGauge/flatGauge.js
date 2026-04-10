@@ -13,14 +13,14 @@ const BAR_RADIUS = 12;
 
 export default class FlatGauge extends LightningElement {
     @api chartTitle;
-    @api query;
+    @api query = '';
     @api maxValue = 100;
     @api referenceValue;
     @api referenceLabel = 'Avg';
     @api valuePrefix = '';
     @api valueSuffix = '';
     @api gradientStops;
-    @api recordId;
+    @api recordId = '';
 
     rawValue = null;
     error;
