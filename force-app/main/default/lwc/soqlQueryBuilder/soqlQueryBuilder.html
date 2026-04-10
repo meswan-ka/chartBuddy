@@ -1,0 +1,289 @@
+<template>
+    <div class="builder-section">
+        <!-- Mode Toggle -->
+        <div class="mode-toggle">
+            <lightning-button-group>
+                <lightning-button
+                    label="Builder"
+                    variant={builderModeVariant}
+                    onclick={handleBuilderMode}
+                ></lightning-button>
+                <lightning-button
+                    label="Raw SOQL"
+                    variant={rawModeVariant}
+                    onclick={handleRawMode}
+                ></lightning-button>
+            </lightning-button-group>
+        </div>
+
+        <!-- Raw Mode -->
+        <template lwc:if={isRawMode}>
+            <lightning-textarea
+                label="SOQL Query"
+                value={rawQuery}
+                onchange={handleRawQueryChange}
+                class="slds-m-bottom_small"
+            ></lightning-textarea>
+        </template>
+
+        <!-- Builder Mode -->
+        <template lwc:elseif={true}>
+            <!-- Object Search -->
+            <div class="object-search">
+                <lightning-input
+                    label="Object"
+                    value={objectSearchTerm}
+                    placeholder="Type object name..."
+                    onchange={handleObjectSearchInput}
+                    onblur={handleObjectSearchBlur}
+                ></lightning-input>
+                <template lwc:if={showObjectDropdown}>
+                    <div class="object-dropdown">
+                        <template for:each={objectSearchResults} for:item="obj">
+                            <div
+                                key={obj.apiName}
+                                class="object-option"
+                                data-apiname={obj.apiName}
+                                onclick={handleObjectSelect}
+                            >
+                                <span>{obj.label}</span>
+                                <span class="object-option-api">{obj.apiName}</span>
+                                <template lwc:if={obj.isCustom}>
+                                    <lightning-badge label="Custom"></lightning-badge>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Record Context -->
+            <div class="record-context-row">
+                <div class="record-context-field">
+                    <lightning-combobox
+                        label="Record Context Field"
+                        value={recordContextField}
+                        options={recordContextOptions}
+                        field-level-help="Links this query to the current record page via :recordId"
+                        onchange={handleRecordContextChange}
+                    ></lightning-combobox>
+                </div>
+                <template lwc:if={recordContextField}>
+                    <span class="record-context-label">= :recordId</span>
+                </template>
+            </div>
+
+            <!-- Field Slots -->
+            <div>
+                <span class="section-label">Fields</span>
+                <template for:each={renderedSlots} for:item="slot">
+                    <div key={slot.key} class="field-slot-row">
+                        <span class="field-slot-label">
+                            {slot.label}
+                            <template lwc:if={slot.required}>
+                                <abbr title="required" class="slds-required">*</abbr>
+                            </template>
+                            <template lwc:elseif={true}>
+                                <span class="section-help"> (optional)</span>
+                            </template>
+                        </span>
+
+                        <template lwc:if={slot.requireAggregate}>
+                            <div class="field-slot-aggregate">
+                                <lightning-combobox
+                                    label="Function"
+                                    variant="label-hidden"
+                                    value={slot.aggregate}
+                                    options={aggregateOptions}
+                                    data-index={slot.index}
+                                    onchange={handleAggregateChange}
+                                ></lightning-combobox>
+                            </div>
+                        </template>
+
+                        <div class="field-slot-field">
+                            <template lwc:if={slot.showCustomInput}>
+                                <lightning-input
+                                    label="Custom Field Path"
+                                    variant="label-hidden"
+                                    value={slot.fieldName}
+                                    placeholder="e.g. Account.Industry"
+                                    data-index={slot.index}
+                                    onchange={handleCustomFieldInput}
+                                ></lightning-input>
+                            </template>
+                            <template lwc:elseif={true}>
+                                <lightning-combobox
+                                    label="Field"
+                                    variant="label-hidden"
+                                    value={slot.fieldName}
+                                    options={fieldPickerOptions}
+                                    data-index={slot.index}
+                                    onchange={handleFieldChange}
+                                    placeholder="Select field..."
+                                ></lightning-combobox>
+                            </template>
+                            <span
+                                class="custom-field-toggle"
+                                data-key={slot.key}
+                                onclick={handleCustomFieldToggle}
+                            >
+                                <template lwc:if={slot.showCustomInput}>
+                                    Use picker
+                                </template>
+                                <template lwc:elseif={true}>
+                                    Custom path
+                                </template>
+                            </span>
+                        </div>
+
+                        <template lwc:if={slot.alias}>
+                            <span class="field-slot-alias">as {slot.alias}</span>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <!-- WHERE Conditions -->
+            <div>
+                <div class="where-header">
+                    <span class="where-header-label">WHERE</span>
+                    <lightning-button
+                        label="Add Condition"
+                        variant="neutral"
+                        icon-name="utility:add"
+                        onclick={handleAddWhereCondition}
+                        size="small"
+                    ></lightning-button>
+                </div>
+                <template lwc:if={hasWhereConditions}>
+                    <template for:each={renderedWhereConditions} for:item="cond">
+                        <div key={cond.id} class="where-row">
+                            <div class="where-field">
+                                <lightning-combobox
+                                    label="Field"
+                                    variant="label-hidden"
+                                    value={cond.fieldName}
+                                    options={fieldPickerOptions}
+                                    data-index={cond.index}
+                                    onchange={handleWhereFieldChange}
+                                    placeholder="Field..."
+                                ></lightning-combobox>
+                            </div>
+                            <div class="where-operator">
+                                <lightning-combobox
+                                    label="Operator"
+                                    variant="label-hidden"
+                                    value={cond.operator}
+                                    options={operatorOptions}
+                                    data-index={cond.index}
+                                    onchange={handleWhereOperatorChange}
+                                ></lightning-combobox>
+                            </div>
+                            <div class="where-value">
+                                <lightning-input
+                                    label="Value"
+                                    variant="label-hidden"
+                                    value={cond.value}
+                                    data-index={cond.index}
+                                    onchange={handleWhereValueChange}
+                                    placeholder="Value..."
+                                ></lightning-input>
+                            </div>
+                            <div class="where-remove">
+                                <lightning-button-icon
+                                    icon-name="utility:close"
+                                    alternative-text="Remove condition"
+                                    variant="bare"
+                                    data-index={cond.index}
+                                    onclick={handleRemoveWhereCondition}
+                                    size="small"
+                                ></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </div>
+
+            <!-- ORDER BY -->
+            <template lwc:if={showOrderBy}>
+                <div class="order-row">
+                    <div class="order-field">
+                        <lightning-combobox
+                            label="ORDER BY"
+                            value={orderByField}
+                            options={fieldPickerOptions}
+                            onchange={handleOrderByFieldChange}
+                            placeholder="None"
+                        ></lightning-combobox>
+                    </div>
+                    <div class="order-direction">
+                        <lightning-combobox
+                            label="Direction"
+                            value={orderByDirection}
+                            options={directionOptions}
+                            onchange={handleOrderByDirectionChange}
+                        ></lightning-combobox>
+                    </div>
+                </div>
+            </template>
+
+            <!-- LIMIT -->
+            <template lwc:if={showLimit}>
+                <lightning-input
+                    type="number"
+                    label="LIMIT"
+                    value={queryLimit}
+                    onchange={handleLimitChange}
+                    min="1"
+                    placeholder="No limit"
+                ></lightning-input>
+            </template>
+        </template>
+
+        <!-- SOQL Preview (always visible) -->
+        <div>
+            <span class="section-label">Preview</span>
+            <div class="soql-preview">{soqlPreview}</div>
+        </div>
+
+        <!-- Warning Modal -->
+        <template lwc:if={showWarningModal}>
+            <section
+                role="dialog"
+                tabindex="-1"
+                class="slds-modal slds-fade-in-open"
+                aria-modal="true"
+                aria-label="Parse warning"
+            >
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Query Contains Unsupported Features</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p>This query contains features the builder does not support. Switching to builder mode will remove them:</p>
+                        <ul class="warning-list">
+                            <template for:each={warningMessages} for:item="msg">
+                                <li key={msg}>{msg}</li>
+                            </template>
+                        </ul>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button
+                            label="Stay in Raw Mode"
+                            variant="neutral"
+                            onclick={handleWarningStay}
+                        ></lightning-button>
+                        <lightning-button
+                            label="Switch Anyway"
+                            variant="brand"
+                            onclick={handleWarningSwitch}
+                            class="slds-m-left_x-small"
+                        ></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>
