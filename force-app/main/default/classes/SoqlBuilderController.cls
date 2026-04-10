@@ -9,9 +9,6 @@ public with sharing class SoqlBuilderController {
         String term = searchTerm.toLowerCase();
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
         for (String apiName : globalDescribe.keySet()) {
-            if (results.size() >= 20) {
-                break;
-            }
             Schema.DescribeSObjectResult desc = globalDescribe.get(apiName).getDescribe();
             if (!desc.isQueryable()) {
                 continue;
@@ -27,6 +24,13 @@ public with sharing class SoqlBuilderController {
             }
         }
         results.sort();
+        if (results.size() > 20) {
+            List<ObjectOption> trimmed = new List<ObjectOption>();
+            for (Integer i = 0; i < 20; i++) {
+                trimmed.add(results[i]);
+            }
+            return trimmed;
+        }
         return results;
     }
 

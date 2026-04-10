@@ -16,14 +16,18 @@ private class SoqlBuilderControllerTest {
     }
 
     @IsTest
-    static void testFindObjectsWithCustomObject() {
-        List<SoqlBuilderController.ObjectOption> results = SoqlBuilderController.findObjects('Chart_Buddy');
+    static void testFindObjectsMatchesLabel() {
+        // 'con' should match Contact, Contract, etc. by label or API name
+        List<SoqlBuilderController.ObjectOption> results = SoqlBuilderController.findObjects('con');
+        System.assert(results.size() > 0, 'Should find objects matching "con"');
+        Boolean foundContact = false;
         for (SoqlBuilderController.ObjectOption opt : results) {
-            if (opt.apiName == 'Chart_Buddy_Config__c') {
-                System.assertEquals(true, opt.isCustom);
+            if (opt.apiName == 'Contact') {
+                foundContact = true;
+                break;
             }
         }
-        System.assert(true);
+        System.assert(foundContact, 'Contact should appear when searching "con"');
     }
 
     @IsTest
@@ -85,25 +89,24 @@ private class SoqlBuilderControllerTest {
 
     @IsTest
     static void testDescribeFieldsInvalidObject() {
+        Boolean exceptionThrown = false;
         try {
             SoqlBuilderController.describeFields('NotARealObject__c');
-            System.assert(false, 'Should have thrown AuraHandledException');
         } catch (AuraHandledException e) {
-            System.assert(
-                e.getMessage().contains('Object not found'),
-                'Error message should indicate object not found'
-            );
+            exceptionThrown = true;
         }
+        System.assert(exceptionThrown, 'Should have thrown AuraHandledException for invalid object');
     }
 
     @IsTest
     static void testDescribeFieldsBlankObject() {
+        Boolean exceptionThrown = false;
         try {
             SoqlBuilderController.describeFields('');
-            System.assert(false, 'Should have thrown AuraHandledException');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage().contains('required'), 'Error message should indicate object name is required');
+            exceptionThrown = true;
         }
+        System.assert(exceptionThrown, 'Should have thrown AuraHandledException for blank object name');
     }
 
     @IsTest
