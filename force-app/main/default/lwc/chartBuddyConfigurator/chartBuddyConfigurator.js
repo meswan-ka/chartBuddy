@@ -326,7 +326,7 @@ export default class ChartBuddyConfigurator extends LightningElement {
         this.columns = this.columns.map(c => {
             if (c.id !== colId) return c;
             if (field === 'chartType') {
-                const newConfig = { ...DEFAULT_CONFIGS[value], chartTitle: c.config.chartTitle, query: c.config.query };
+                const newConfig = { ...DEFAULT_CONFIGS[value], chartTitle: c.config.chartTitle };
                 return { ...c, chartType: value, config: newConfig };
             }
             if (field === 'width') {
@@ -344,10 +344,10 @@ export default class ChartBuddyConfigurator extends LightningElement {
             if (c.id !== colId) return c;
             const updatedConfig = { ...c.config, [field]: value };
             if (field === 'query' && event.detail) {
-                if (event.detail.labelField !== undefined) updatedConfig.labelField = event.detail.labelField;
-                if (event.detail.valueField !== undefined) updatedConfig.valueField = event.detail.valueField;
-                if (event.detail.seriesField !== undefined) updatedConfig.seriesField = event.detail.seriesField;
-                if (event.detail.secondaryValueField !== undefined) updatedConfig.secondaryValueField = event.detail.secondaryValueField;
+                if (event.detail.labelField != null) updatedConfig.labelField = event.detail.labelField;
+                if (event.detail.valueField != null) updatedConfig.valueField = event.detail.valueField;
+                if (event.detail.seriesField != null) updatedConfig.seriesField = event.detail.seriesField;
+                if (event.detail.secondaryValueField != null) updatedConfig.secondaryValueField = event.detail.secondaryValueField;
             }
             return { ...c, config: updatedConfig };
         });

@@ -27,7 +27,7 @@
         </template>
 
         <!-- Builder Mode -->
-        <template lwc:elseif={true}>
+        <template lwc:else>
             <!-- Object Search -->
             <div class="object-search">
                 <lightning-input
@@ -83,7 +83,7 @@
                             <template lwc:if={slot.required}>
                                 <abbr title="required" class="slds-required">*</abbr>
                             </template>
-                            <template lwc:elseif={true}>
+                            <template lwc:else>
                                 <span class="section-help"> (optional)</span>
                             </template>
                         </span>
@@ -112,7 +112,7 @@
                                     onchange={handleCustomFieldInput}
                                 ></lightning-input>
                             </template>
-                            <template lwc:elseif={true}>
+                            <template lwc:else>
                                 <lightning-combobox
                                     label="Field"
                                     variant="label-hidden"
@@ -131,7 +131,7 @@
                                 <template lwc:if={slot.showCustomInput}>
                                     Use picker
                                 </template>
-                                <template lwc:elseif={true}>
+                                <template lwc:else>
                                     Custom path
                                 </template>
                             </span>

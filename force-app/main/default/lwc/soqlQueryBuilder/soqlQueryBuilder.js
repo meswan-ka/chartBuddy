@@ -441,6 +441,7 @@ export default class SoqlQueryBuilder extends LightningElement {
             if (result.state.objectName) {
                 this._loadFields(result.state.objectName);
             }
+            this._fireQueryChange();
         } else {
             this.warningMessages = result.warnings;
             this._pendingParseState = result.state;
