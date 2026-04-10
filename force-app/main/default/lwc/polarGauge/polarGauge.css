@@ -5,8 +5,8 @@
 
 .gauge-svg {
     width: 100%;
-    max-width: 200px;
-    height: auto;
+    max-width: 150px;
+    max-height: 150px;
     display: inline-block;
 }
 
