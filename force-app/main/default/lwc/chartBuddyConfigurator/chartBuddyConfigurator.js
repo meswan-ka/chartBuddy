@@ -158,7 +158,8 @@ export default class ChartBuddyConfigurator extends LightningElement {
                 ...col,
                 widthStr: String(col.width),
                 columnLabel: `#${idx + 1}`,
-                chartTypeLabel: (CHART_TYPE_LABEL_MAP[chartType] || chartType) + (col.config.chartTitle ? ' (' + col.config.chartTitle + ')' : ''),
+                chartTypeBadge: CHART_TYPE_LABEL_MAP[chartType] || chartType,
+                headerTitle: col.config.chartTitle || '',
                 widthLabel: `${col.width}/12`,
                 iconName: CHART_ICON_MAP[chartType] || 'utility:chart',
                 expandIcon: isExpanded ? 'utility:chevrondown' : 'utility:chevronright',
@@ -175,7 +176,19 @@ export default class ChartBuddyConfigurator extends LightningElement {
                 showValuePrefix: showPrefix,
                 showValueSuffix: showPrefix && showSuffix,
                 showValueSuffixOnly: !showPrefix && showSuffix,
-                showHeightField: TYPES_WITH_HEIGHT.has(chartType)
+                showHeightField: TYPES_WITH_HEIGHT.has(chartType),
+                maxValueBound: this._isBound(col.config.maxValue),
+                maxValueFieldName: this._boundFieldName(col.config.maxValue),
+                maxValueStatic: !this._isBound(col.config.maxValue),
+                maxValueBindIcon: this._isBound(col.config.maxValue) ? 'utility:record' : 'utility:link',
+                refValueBound: this._isBound(col.config.referenceValue),
+                refValueFieldName: this._boundFieldName(col.config.referenceValue),
+                refValueStatic: !this._isBound(col.config.referenceValue),
+                refValueBindIcon: this._isBound(col.config.referenceValue) ? 'utility:record' : 'utility:link',
+                maxDotsBound: this._isBound(col.config.maxDots),
+                maxDotsFieldName: this._boundFieldName(col.config.maxDots),
+                maxDotsStatic: !this._isBound(col.config.maxDots),
+                maxDotsBindIcon: this._isBound(col.config.maxDots) ? 'utility:record' : 'utility:link'
             };
         });
     }
@@ -353,6 +366,33 @@ export default class ChartBuddyConfigurator extends LightningElement {
         });
     }
 
+    handleToggleFieldBinding(event) {
+        const colId = event.currentTarget.dataset.id;
+        const field = event.currentTarget.dataset.field;
+        this.columns = this.columns.map(c => {
+            if (c.id !== colId) return c;
+            const currentVal = c.config[field];
+            const isBound = typeof currentVal === 'string' && currentVal.startsWith('$Record.');
+            let newVal;
+            if (isBound) {
+                newVal = null;
+            } else {
+                newVal = '$Record.';
+            }
+            return { ...c, config: { ...c.config, [field]: newVal } };
+        });
+    }
+
+    handleBoundFieldChange(event) {
+        const colId = event.currentTarget.dataset.id;
+        const field = event.currentTarget.dataset.field;
+        const fieldName = event.target.value;
+        this.columns = this.columns.map(c => {
+            if (c.id !== colId) return c;
+            return { ...c, config: { ...c.config, [field]: '$Record.' + fieldName } };
+        });
+    }
+
     handleColumnCheckboxChange(event) {
         const colId = event.currentTarget.dataset.id;
         const field = event.currentTarget.dataset.field;
@@ -364,6 +404,14 @@ export default class ChartBuddyConfigurator extends LightningElement {
     }
 
     // --- Private Helpers ---
+    _isBound(val) {
+        return typeof val === 'string' && val.startsWith('$Record.');
+    }
+
+    _boundFieldName(val) {
+        return this._isBound(val) ? val.substring(8) : '';
+    }
+
     _resetForm() {
         this.configId = null;
         this.configName = '';

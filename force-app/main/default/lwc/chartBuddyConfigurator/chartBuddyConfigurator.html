@@ -103,7 +103,8 @@
                                 alternative-text="Drag"
                             ></lightning-icon>
                             <lightning-badge label={col.columnLabel} class="slds-m-horizontal_xx-small"></lightning-badge>
-                            <span class="slds-m-horizontal_xx-small column-type-label">{col.chartTypeLabel}</span>
+                            <span class="slds-m-horizontal_xx-small column-header-title">{col.headerTitle}</span>
+                            <lightning-badge label={col.chartTypeBadge} class="slds-m-horizontal_xx-small"></lightning-badge>
                             <lightning-badge label={col.widthLabel} class="slds-m-horizontal_xx-small"></lightning-badge>
                             <div class="column-actions">
                                 <lightning-button-icon
@@ -307,24 +308,84 @@
                                 <template lwc:if={col.isFlatGauge}>
                                     <div class="slds-grid slds-gutters slds-m-bottom_small">
                                         <div class="slds-col slds-size_1-of-3">
-                                            <lightning-input
-                                                type="number"
-                                                label="Max Value"
-                                                value={col.config.maxValue}
-                                                data-id={col.id}
-                                                data-field="maxValue"
-                                                onchange={handleColumnConfigChange}
-                                            ></lightning-input>
+                                            <div class="bindable-field">
+                                                <div class="bindable-field-header">
+                                                    <span class="bindable-field-label">Max Value</span>
+                                                    <lightning-button-icon
+                                                        icon-name={col.maxValueBindIcon}
+                                                        alternative-text="Toggle record binding"
+                                                        data-id={col.id}
+                                                        data-field="maxValue"
+                                                        onclick={handleToggleFieldBinding}
+                                                        size="x-small"
+                                                        variant="bare"
+                                                        title="Toggle record field binding"
+                                                    ></lightning-button-icon>
+                                                </div>
+                                                <template lwc:if={col.maxValueStatic}>
+                                                    <lightning-input
+                                                        type="number"
+                                                        label="Max Value"
+                                                        variant="label-hidden"
+                                                        value={col.config.maxValue}
+                                                        data-id={col.id}
+                                                        data-field="maxValue"
+                                                        onchange={handleColumnConfigChange}
+                                                    ></lightning-input>
+                                                </template>
+                                                <template lwc:else>
+                                                    <lightning-input
+                                                        label="Record Field API Name"
+                                                        variant="label-hidden"
+                                                        value={col.maxValueFieldName}
+                                                        data-id={col.id}
+                                                        data-field="maxValue"
+                                                        data-bind-prefix="$Record."
+                                                        onchange={handleBoundFieldChange}
+                                                        placeholder="e.g. AnnualRevenue"
+                                                    ></lightning-input>
+                                                </template>
+                                            </div>
                                         </div>
                                         <div class="slds-col slds-size_1-of-3">
-                                            <lightning-input
-                                                type="number"
-                                                label="Reference Value"
-                                                value={col.config.referenceValue}
-                                                data-id={col.id}
-                                                data-field="referenceValue"
-                                                onchange={handleColumnConfigChange}
-                                            ></lightning-input>
+                                            <div class="bindable-field">
+                                                <div class="bindable-field-header">
+                                                    <span class="bindable-field-label">Reference Value</span>
+                                                    <lightning-button-icon
+                                                        icon-name={col.refValueBindIcon}
+                                                        alternative-text="Toggle record binding"
+                                                        data-id={col.id}
+                                                        data-field="referenceValue"
+                                                        onclick={handleToggleFieldBinding}
+                                                        size="x-small"
+                                                        variant="bare"
+                                                        title="Toggle record field binding"
+                                                    ></lightning-button-icon>
+                                                </div>
+                                                <template lwc:if={col.refValueStatic}>
+                                                    <lightning-input
+                                                        type="number"
+                                                        label="Reference Value"
+                                                        variant="label-hidden"
+                                                        value={col.config.referenceValue}
+                                                        data-id={col.id}
+                                                        data-field="referenceValue"
+                                                        onchange={handleColumnConfigChange}
+                                                    ></lightning-input>
+                                                </template>
+                                                <template lwc:else>
+                                                    <lightning-input
+                                                        label="Record Field API Name"
+                                                        variant="label-hidden"
+                                                        value={col.refValueFieldName}
+                                                        data-id={col.id}
+                                                        data-field="referenceValue"
+                                                        data-bind-prefix="$Record."
+                                                        onchange={handleBoundFieldChange}
+                                                        placeholder="e.g. Target__c"
+                                                    ></lightning-input>
+                                                </template>
+                                            </div>
                                         </div>
                                         <div class="slds-col slds-size_1-of-3">
                                             <lightning-input
@@ -340,28 +401,84 @@
 
                                 <!-- polarGauge fields -->
                                 <template lwc:if={col.isPolarGauge}>
-                                    <lightning-input
-                                        type="number"
-                                        label="Max Value"
-                                        value={col.config.maxValue}
-                                        data-id={col.id}
-                                        data-field="maxValue"
-                                        onchange={handleColumnConfigChange}
-                                        class="slds-m-bottom_small"
-                                    ></lightning-input>
+                                    <div class="bindable-field slds-m-bottom_small">
+                                        <div class="bindable-field-header">
+                                            <span class="bindable-field-label">Max Value</span>
+                                            <lightning-button-icon
+                                                icon-name={col.maxValueBindIcon}
+                                                alternative-text="Toggle record binding"
+                                                data-id={col.id}
+                                                data-field="maxValue"
+                                                onclick={handleToggleFieldBinding}
+                                                size="x-small"
+                                                variant="bare"
+                                            ></lightning-button-icon>
+                                        </div>
+                                        <template lwc:if={col.maxValueStatic}>
+                                            <lightning-input
+                                                type="number"
+                                                label="Max Value"
+                                                variant="label-hidden"
+                                                value={col.config.maxValue}
+                                                data-id={col.id}
+                                                data-field="maxValue"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </template>
+                                        <template lwc:else>
+                                            <lightning-input
+                                                label="Record Field API Name"
+                                                variant="label-hidden"
+                                                value={col.maxValueFieldName}
+                                                data-id={col.id}
+                                                data-field="maxValue"
+                                                data-bind-prefix="$Record."
+                                                onchange={handleBoundFieldChange}
+                                                placeholder="e.g. AnnualRevenue"
+                                            ></lightning-input>
+                                        </template>
+                                    </div>
                                 </template>
 
                                 <!-- ratingsChart fields -->
                                 <template lwc:if={col.isRatingsChart}>
-                                    <lightning-input
-                                        type="number"
-                                        label="Max Dots"
-                                        value={col.config.maxDots}
-                                        data-id={col.id}
-                                        data-field="maxDots"
-                                        onchange={handleColumnConfigChange}
-                                        class="slds-m-bottom_small"
-                                    ></lightning-input>
+                                    <div class="bindable-field slds-m-bottom_small">
+                                        <div class="bindable-field-header">
+                                            <span class="bindable-field-label">Max Dots</span>
+                                            <lightning-button-icon
+                                                icon-name={col.maxDotsBindIcon}
+                                                alternative-text="Toggle record binding"
+                                                data-id={col.id}
+                                                data-field="maxDots"
+                                                onclick={handleToggleFieldBinding}
+                                                size="x-small"
+                                                variant="bare"
+                                            ></lightning-button-icon>
+                                        </div>
+                                        <template lwc:if={col.maxDotsStatic}>
+                                            <lightning-input
+                                                type="number"
+                                                label="Max Dots"
+                                                variant="label-hidden"
+                                                value={col.config.maxDots}
+                                                data-id={col.id}
+                                                data-field="maxDots"
+                                                onchange={handleColumnConfigChange}
+                                            ></lightning-input>
+                                        </template>
+                                        <template lwc:else>
+                                            <lightning-input
+                                                label="Record Field API Name"
+                                                variant="label-hidden"
+                                                value={col.maxDotsFieldName}
+                                                data-id={col.id}
+                                                data-field="maxDots"
+                                                data-bind-prefix="$Record."
+                                                onchange={handleBoundFieldChange}
+                                                placeholder="e.g. Rating_Scale__c"
+                                            ></lightning-input>
+                                        </template>
+                                    </div>
                                 </template>
 
                                 <!-- waterfallChart fields -->
@@ -460,17 +577,94 @@
                     <lightning-layout multiple-rows>
                         <template for:each={renderedColumns} for:item="col">
                             <lightning-layout-item key={col.id} size={col.width} padding="around-small">
-                                <div class="preview-card">
-                                    <lightning-icon
-                                        icon-name={col.iconName}
-                                        size="small"
-                                        class="slds-m-right_x-small"
-                                    ></lightning-icon>
-                                    <div class="preview-card-text">
-                                        <span class="preview-card-title">{col.config.chartTitle}</span>
-                                        <span class="type-badge">{col.chartTypeLabel}</span>
-                                    </div>
-                                </div>
+
+                                <template lwc:if={col.isBarChart}>
+                                    <c-bar-chart
+                                        chart-title={col.config.chartTitle}
+                                        query={col.config.query}
+                                        label-field={col.config.labelField}
+                                        value-field={col.config.valueField}
+                                        series-field={col.config.seriesField}
+                                        orientation={col.config.orientation}
+                                        variant={col.config.variant}
+                                        value-prefix={col.config.valuePrefix}
+                                        value-suffix={col.config.valueSuffix}
+                                        height={col.config.height}
+                                        record-id={contextRecordId}>
+                                    </c-bar-chart>
+                                </template>
+
+                                <template lwc:if={col.isLineChart}>
+                                    <c-line-chart
+                                        chart-title={col.config.chartTitle}
+                                        query={col.config.query}
+                                        label-field={col.config.labelField}
+                                        value-field={col.config.valueField}
+                                        secondary-value-field={col.config.secondaryValueField}
+                                        show-area={col.config.showArea}
+                                        value-prefix={col.config.valuePrefix}
+                                        value-suffix={col.config.valueSuffix}
+                                        secondary-prefix={col.config.secondaryPrefix}
+                                        secondary-suffix={col.config.secondarySuffix}
+                                        height={col.config.height}
+                                        record-id={contextRecordId}>
+                                    </c-line-chart>
+                                </template>
+
+                                <template lwc:if={col.isFlatGauge}>
+                                    <c-flat-gauge
+                                        chart-title={col.config.chartTitle}
+                                        query={col.config.query}
+                                        max-value={col.config.maxValue}
+                                        reference-value={col.config.referenceValue}
+                                        reference-label={col.config.referenceLabel}
+                                        value-prefix={col.config.valuePrefix}
+                                        value-suffix={col.config.valueSuffix}
+                                        record-id={contextRecordId}>
+                                    </c-flat-gauge>
+                                </template>
+
+                                <template lwc:if={col.isPolarGauge}>
+                                    <c-polar-gauge
+                                        chart-title={col.config.chartTitle}
+                                        query={col.config.query}
+                                        max-value={col.config.maxValue}
+                                        value-suffix={col.config.valueSuffix}
+                                        record-id={contextRecordId}>
+                                    </c-polar-gauge>
+                                </template>
+
+                                <template lwc:if={col.isRatingsChart}>
+                                    <c-ratings-chart
+                                        chart-title={col.config.chartTitle}
+                                        query={col.config.query}
+                                        max-dots={col.config.maxDots}
+                                        record-id={contextRecordId}>
+                                    </c-ratings-chart>
+                                </template>
+
+                                <template lwc:if={col.isPipelineChart}>
+                                    <c-pipeline-chart
+                                        chart-title={col.config.chartTitle}
+                                        query={col.config.query}
+                                        value-prefix={col.config.valuePrefix}
+                                        value-suffix={col.config.valueSuffix}
+                                        record-id={contextRecordId}>
+                                    </c-pipeline-chart>
+                                </template>
+
+                                <template lwc:if={col.isWaterfallChart}>
+                                    <c-waterfall-chart
+                                        chart-title={col.config.chartTitle}
+                                        query={col.config.query}
+                                        mode={col.config.mode}
+                                        value-prefix={col.config.valuePrefix}
+                                        value-suffix={col.config.valueSuffix}
+                                        height={col.config.height}
+                                        record-id={contextRecordId}>
+                                    </c-waterfall-chart>
+                                </template>
+
                             </lightning-layout-item>
                         </template>
                     </lightning-layout>

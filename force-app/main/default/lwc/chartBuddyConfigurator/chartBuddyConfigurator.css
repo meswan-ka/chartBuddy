@@ -48,9 +48,10 @@
     opacity: 0.5;
 }
 
-.column-type-label {
+.column-header-title {
     font-size: 0.8125rem;
-    color: var(--slds-g-color-neutral-base-30, #706e6b);
+    font-weight: 600;
+    color: var(--slds-g-color-neutral-base-10, #181818);
     flex: 1;
     min-width: 0;
     overflow: hidden;
@@ -119,6 +120,20 @@
     color: var(--slds-g-color-neutral-base-30, #706e6b);
     text-transform: uppercase;
     letter-spacing: 0.03em;
+}
+
+/* Bindable field toggle */
+.bindable-field-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+}
+
+.bindable-field-label {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--slds-g-color-neutral-base-10, #181818);
 }
 
 .json-preview {
