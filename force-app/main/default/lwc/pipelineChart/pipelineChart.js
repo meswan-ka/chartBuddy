@@ -9,8 +9,8 @@ export default class PipelineChart extends LightningElement {
     @api query;
     @api valuePrefix = '$';
     @api valueSuffix = 'm';
-    @api objectApiName;
-    @api picklistField;
+    @api objectApiName = '';
+    @api picklistField = '';
     @api recordId;
 
     _data = [];
