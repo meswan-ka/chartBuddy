@@ -578,91 +578,112 @@
                         <template for:each={renderedColumns} for:item="col">
                             <lightning-layout-item key={col.id} size={col.width} padding="around-small">
 
-                                <template lwc:if={col.isBarChart}>
-                                    <c-bar-chart
-                                        chart-title={col.config.chartTitle}
-                                        query={col.config.query}
-                                        label-field={col.config.labelField}
-                                        value-field={col.config.valueField}
-                                        series-field={col.config.seriesField}
-                                        orientation={col.config.orientation}
-                                        variant={col.config.variant}
-                                        value-prefix={col.config.valuePrefix}
-                                        value-suffix={col.config.valueSuffix}
-                                        height={col.config.height}
-                                        record-id={contextRecordId}>
-                                    </c-bar-chart>
+                                <!-- Placeholder when no query configured -->
+                                <template lwc:if={col.canPreview}>
+
+                                    <template lwc:if={col.isBarChart}>
+                                        <c-bar-chart
+                                            chart-title={col.config.chartTitle}
+                                            query={col.config.query}
+                                            label-field={col.config.labelField}
+                                            value-field={col.config.valueField}
+                                            series-field={col.config.seriesField}
+                                            orientation={col.config.orientation}
+                                            variant={col.config.variant}
+                                            value-prefix={col.config.valuePrefix}
+                                            value-suffix={col.config.valueSuffix}
+                                            height={col.config.height}
+                                            record-id={contextRecordId}>
+                                        </c-bar-chart>
+                                    </template>
+
+                                    <template lwc:if={col.isLineChart}>
+                                        <c-line-chart
+                                            chart-title={col.config.chartTitle}
+                                            query={col.config.query}
+                                            label-field={col.config.labelField}
+                                            value-field={col.config.valueField}
+                                            secondary-value-field={col.config.secondaryValueField}
+                                            show-area={col.config.showArea}
+                                            value-prefix={col.config.valuePrefix}
+                                            value-suffix={col.config.valueSuffix}
+                                            secondary-prefix={col.config.secondaryPrefix}
+                                            secondary-suffix={col.config.secondarySuffix}
+                                            height={col.config.height}
+                                            record-id={contextRecordId}>
+                                        </c-line-chart>
+                                    </template>
+
+                                    <template lwc:if={col.isFlatGauge}>
+                                        <c-flat-gauge
+                                            chart-title={col.config.chartTitle}
+                                            query={col.config.query}
+                                            max-value={col.config.maxValue}
+                                            reference-value={col.config.referenceValue}
+                                            reference-label={col.config.referenceLabel}
+                                            value-prefix={col.config.valuePrefix}
+                                            value-suffix={col.config.valueSuffix}
+                                            record-id={contextRecordId}>
+                                        </c-flat-gauge>
+                                    </template>
+
+                                    <template lwc:if={col.isPolarGauge}>
+                                        <c-polar-gauge
+                                            chart-title={col.config.chartTitle}
+                                            query={col.config.query}
+                                            max-value={col.config.maxValue}
+                                            value-suffix={col.config.valueSuffix}
+                                            record-id={contextRecordId}>
+                                        </c-polar-gauge>
+                                    </template>
+
+                                    <template lwc:if={col.isRatingsChart}>
+                                        <c-ratings-chart
+                                            chart-title={col.config.chartTitle}
+                                            query={col.config.query}
+                                            max-dots={col.config.maxDots}
+                                            record-id={contextRecordId}>
+                                        </c-ratings-chart>
+                                    </template>
+
+                                    <template lwc:if={col.isPipelineChart}>
+                                        <c-pipeline-chart
+                                            chart-title={col.config.chartTitle}
+                                            query={col.config.query}
+                                            value-prefix={col.config.valuePrefix}
+                                            value-suffix={col.config.valueSuffix}
+                                            record-id={contextRecordId}>
+                                        </c-pipeline-chart>
+                                    </template>
+
+                                    <template lwc:if={col.isWaterfallChart}>
+                                        <c-waterfall-chart
+                                            chart-title={col.config.chartTitle}
+                                            query={col.config.query}
+                                            mode={col.config.mode}
+                                            value-prefix={col.config.valuePrefix}
+                                            value-suffix={col.config.valueSuffix}
+                                            height={col.config.height}
+                                            record-id={contextRecordId}>
+                                        </c-waterfall-chart>
+                                    </template>
+
                                 </template>
 
-                                <template lwc:if={col.isLineChart}>
-                                    <c-line-chart
-                                        chart-title={col.config.chartTitle}
-                                        query={col.config.query}
-                                        label-field={col.config.labelField}
-                                        value-field={col.config.valueField}
-                                        secondary-value-field={col.config.secondaryValueField}
-                                        show-area={col.config.showArea}
-                                        value-prefix={col.config.valuePrefix}
-                                        value-suffix={col.config.valueSuffix}
-                                        secondary-prefix={col.config.secondaryPrefix}
-                                        secondary-suffix={col.config.secondarySuffix}
-                                        height={col.config.height}
-                                        record-id={contextRecordId}>
-                                    </c-line-chart>
-                                </template>
-
-                                <template lwc:if={col.isFlatGauge}>
-                                    <c-flat-gauge
-                                        chart-title={col.config.chartTitle}
-                                        query={col.config.query}
-                                        max-value={col.config.maxValue}
-                                        reference-value={col.config.referenceValue}
-                                        reference-label={col.config.referenceLabel}
-                                        value-prefix={col.config.valuePrefix}
-                                        value-suffix={col.config.valueSuffix}
-                                        record-id={contextRecordId}>
-                                    </c-flat-gauge>
-                                </template>
-
-                                <template lwc:if={col.isPolarGauge}>
-                                    <c-polar-gauge
-                                        chart-title={col.config.chartTitle}
-                                        query={col.config.query}
-                                        max-value={col.config.maxValue}
-                                        value-suffix={col.config.valueSuffix}
-                                        record-id={contextRecordId}>
-                                    </c-polar-gauge>
-                                </template>
-
-                                <template lwc:if={col.isRatingsChart}>
-                                    <c-ratings-chart
-                                        chart-title={col.config.chartTitle}
-                                        query={col.config.query}
-                                        max-dots={col.config.maxDots}
-                                        record-id={contextRecordId}>
-                                    </c-ratings-chart>
-                                </template>
-
-                                <template lwc:if={col.isPipelineChart}>
-                                    <c-pipeline-chart
-                                        chart-title={col.config.chartTitle}
-                                        query={col.config.query}
-                                        value-prefix={col.config.valuePrefix}
-                                        value-suffix={col.config.valueSuffix}
-                                        record-id={contextRecordId}>
-                                    </c-pipeline-chart>
-                                </template>
-
-                                <template lwc:if={col.isWaterfallChart}>
-                                    <c-waterfall-chart
-                                        chart-title={col.config.chartTitle}
-                                        query={col.config.query}
-                                        mode={col.config.mode}
-                                        value-prefix={col.config.valuePrefix}
-                                        value-suffix={col.config.valueSuffix}
-                                        height={col.config.height}
-                                        record-id={contextRecordId}>
-                                    </c-waterfall-chart>
+                                <!-- Placeholder when query not yet configured -->
+                                <template lwc:else>
+                                    <div class="preview-card">
+                                        <lightning-icon
+                                            icon-name={col.iconName}
+                                            size="small"
+                                            class="slds-m-right_x-small"
+                                        ></lightning-icon>
+                                        <div class="preview-card-text">
+                                            <span class="preview-card-title">{col.headerTitle}</span>
+                                            <span class="type-badge">{col.chartTypeBadge}</span>
+                                            <span class="type-badge">Configure query to preview</span>
+                                        </div>
+                                    </div>
                                 </template>
 
                             </lightning-layout-item>

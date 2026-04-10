@@ -177,6 +177,7 @@ export default class ChartBuddyConfigurator extends LightningElement {
                 showValueSuffix: showPrefix && showSuffix,
                 showValueSuffixOnly: !showPrefix && showSuffix,
                 showHeightField: TYPES_WITH_HEIGHT.has(chartType),
+                canPreview: Boolean(col.config.query),
                 maxValueBound: this._isBound(col.config.maxValue),
                 maxValueFieldName: this._boundFieldName(col.config.maxValue),
                 maxValueStatic: !this._isBound(col.config.maxValue),
