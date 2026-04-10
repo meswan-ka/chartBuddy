@@ -41,13 +41,16 @@
                         onblur={handleObjectSearchBlur}
                     ></lightning-input>
                     <template lwc:if={showObjectDropdown}>
-                        <div class="object-dropdown">
+                        <div class="object-dropdown" role="listbox">
                             <template for:each={objectSearchResults} for:item="obj">
                                 <div
                                     key={obj.apiName}
                                     class="object-option"
                                     data-apiname={obj.apiName}
+                                    role="option"
+                                    tabindex="0"
                                     onclick={handleObjectSelect}
+                                    onkeydown={handleObjectSelect}
                                 >
                                     <span>{obj.label}</span>
                                     <span class="object-option-api">{obj.apiName}</span>
@@ -130,7 +133,10 @@
                                 <span
                                     class="custom-field-toggle"
                                     data-key={field.id}
+                                    role="button"
+                                    tabindex="0"
                                     onclick={handleCustomFieldToggle}
+                                    onkeydown={handleCustomFieldToggle}
                                 >
                                     <template lwc:if={field.showCustomInput}>
                                         Use field picker
@@ -204,7 +210,10 @@
                             <span
                                 class="custom-field-toggle"
                                 data-key={singleField.id}
+                                role="button"
+                                tabindex="0"
                                 onclick={handleCustomFieldToggle}
+                                onkeydown={handleCustomFieldToggle}
                             >
                                 <template lwc:if={singleField.showCustomInput}>
                                     Use field picker

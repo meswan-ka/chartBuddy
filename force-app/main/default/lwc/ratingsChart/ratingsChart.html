@@ -1,6 +1,6 @@
 <template>
     <div class="ratings-container">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} class="ratings-svg">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} class="ratings-svg" role="img" aria-label={chartTitle}>
             <template lwc:if={hasData}>
                 <template for:each={dots} for:item="dot">
                     <circle

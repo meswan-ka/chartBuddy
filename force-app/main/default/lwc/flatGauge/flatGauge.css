@@ -1,5 +1,5 @@
 .gauge-container {
-    padding: 0.5rem;
+    padding: var(--slds-g-spacing-2, 0.5rem);
 }
 
 .gauge-svg {
@@ -9,37 +9,33 @@
 }
 
 .gauge-title {
-    font-size: 12px;
-    font-weight: 400;
-    font-family: 'Salesforce Sans', Arial, sans-serif;
+    font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+    font-weight: var(--slds-g-font-weight-4, 400);
 }
 
 .gauge-value {
-    font-size: 18px;
-    font-weight: 700;
-    font-family: 'Salesforce Sans', Arial, sans-serif;
+    font-size: 1.125rem;
+    font-weight: var(--slds-g-font-weight-7, 700);
 }
 
 .gauge-superscript {
-    font-size: 9px;
-    font-weight: 400;
-    font-family: 'Salesforce Sans', Arial, sans-serif;
+    font-size: var(--slds-g-font-scale-neg-2, 0.625rem);
+    font-weight: var(--slds-g-font-weight-4, 400);
 }
 
 .reference-line {
-    stroke: #706e6b;
+    stroke: var(--slds-g-color-on-surface-1, #5C5C5C);
     stroke-width: 1.5;
     stroke-dasharray: 4 3;
 }
 
 .reference-label {
-    font-size: 10px;
+    font-size: var(--slds-g-font-scale-neg-2, 0.625rem);
     text-anchor: middle;
-    font-family: 'Salesforce Sans', Arial, sans-serif;
 }
 
 .error-text {
-    color: #c23934;
-    font-size: 0.8125rem;
-    margin: 0.5rem 0 0;
+    color: var(--slds-g-color-error-1, #c23934);
+    font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+    margin: var(--slds-g-spacing-2, 0.5rem) 0 0;
 }

@@ -1,9 +1,9 @@
 <template>
     <div class="chart-container" style={containerStyle}>
-        <template if:true={hasError}>
+        <template lwc:if={hasError}>
             <div class="error-message">{errorMessage}</div>
         </template>
-        <template if:true={hasData}>
+        <template lwc:if={hasData}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} preserveAspectRatio="xMidYMid meet" role="img" aria-label={chartTitle}>
 
                 <!-- Grid lines -->
@@ -20,7 +20,7 @@
                 </template>
 
                 <!-- Primary area fill -->
-                <template if:true={showArea}>
+                <template lwc:if={showArea}>
                     <polygon
                         points={primaryAreaPoints}
                         fill={primaryAreaFill}
@@ -29,8 +29,8 @@
                 </template>
 
                 <!-- Secondary area fill -->
-                <template if:true={showArea}>
-                    <template if:true={hasDualAxis}>
+                <template lwc:if={showArea}>
+                    <template lwc:if={hasDualAxis}>
                         <polygon
                             points={secondaryAreaPoints}
                             fill={secondaryAreaFill}
@@ -50,7 +50,7 @@
                 ></polyline>
 
                 <!-- Secondary line -->
-                <template if:true={hasDualAxis}>
+                <template lwc:if={hasDualAxis}>
                     <polyline
                         points={secondaryLinePoints}
                         fill="none"
@@ -74,7 +74,7 @@
                 </template>
 
                 <!-- Y axis labels (secondary, right) -->
-                <template if:true={hasDualAxis}>
+                <template lwc:if={hasDualAxis}>
                     <template for:each={secondaryYAxisLabels} for:item="label">
                         <text
                             key={label.key}
@@ -100,7 +100,7 @@
                 </template>
 
                 <!-- Chart title -->
-                <template if:true={chartTitle}>
+                <template lwc:if={chartTitle}>
                     <text
                         x={titleX}
                         y={titleY}

@@ -1,7 +1,6 @@
 :host {
     display: block;
     width: 100%;
-    font-family: 'Salesforce Sans', Arial, sans-serif;
 }
 
 .chart-container {
@@ -23,34 +22,52 @@
 }
 
 .error-message {
-    padding: 1rem;
+    padding: var(--slds-g-spacing-4, 1rem);
     color: var(--slds-g-color-error-1, #c23934);
     text-align: center;
-    font-size: 0.8125rem;
+    font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
 }
 
 .legend {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0 0;
+    gap: var(--slds-g-spacing-3, 0.75rem);
+    padding: var(--slds-g-spacing-2, 0.5rem) 0 0;
 }
 
 .legend-item {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--slds-g-spacing-1, 0.25rem);
 }
 
 .legend-dot {
     display: inline-block;
-    width: 8px;
-    height: 8px;
+    width: var(--slds-g-sizing-2, 0.5rem);
+    height: var(--slds-g-sizing-2, 0.5rem);
     border-radius: 50%;
 }
 
 .legend-label {
-    font-size: 11px;
-    color: var(--slds-g-color-neutral-2, #706e6b);
+    font-size: var(--slds-g-font-scale-neg-2, 0.625rem);
+    color: var(--slds-g-color-on-surface-1, #5C5C5C);
+}
+
+.grid-line {
+    stroke: var(--slds-g-color-surface-container-3, #e5e5e5);
+    stroke-width: 1;
+}
+
+.axis-line {
+    stroke: var(--slds-g-color-surface-container-3, #c9c7c5);
+    stroke-width: 1;
+}
+
+.axis-label {
+    fill: var(--slds-g-color-on-surface-1, #5C5C5C);
+}
+
+.chart-title-text {
+    fill: var(--slds-g-color-on-surface-2, #2E2E2E);
 }
