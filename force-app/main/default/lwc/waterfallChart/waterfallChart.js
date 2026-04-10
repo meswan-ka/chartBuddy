@@ -16,7 +16,7 @@ export default class WaterfallChart extends LightningElement {
     @api mode = 'delta';
     @api valuePrefix = '$';
     @api valueSuffix;
-    @api height = 300;
+    @api height = 150;
     @api recordId = '';
 
     _data = [];
@@ -56,7 +56,7 @@ export default class WaterfallChart extends LightningElement {
     }
 
     get svgHeight() {
-        return this.height || 300;
+        return this.height || 150;
     }
 
     get viewBox() {

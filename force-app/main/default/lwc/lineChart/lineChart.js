@@ -5,7 +5,7 @@ import LOCALE from '@salesforce/i18n/locale';
 import { COLORS, formatValue, computeTicks, isCurrencyPrefix, getCurrencySymbol } from 'c/chartUtils';
 
 const SVG_WIDTH = 500;
-const DEFAULT_HEIGHT = 300;
+const DEFAULT_HEIGHT = 150;
 const TICK_COUNT = 5;
 const PAD_TOP = 20;
 const PAD_BOTTOM = 50;

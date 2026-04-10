@@ -61,11 +61,11 @@ const TYPES_WITH_HEIGHT = new Set(['barChart', 'lineChart', 'waterfallChart']);
 const DEFAULT_CONFIGS = {
     barChart: {
         chartTitle: '', query: '', labelField: '', valueField: '', seriesField: '',
-        orientation: 'vertical', variant: 'simple', valuePrefix: '', valueSuffix: '', height: 300
+        orientation: 'vertical', variant: 'simple', valuePrefix: '', valueSuffix: '', height: 150
     },
     lineChart: {
         chartTitle: '', query: '', labelField: '', valueField: '', secondaryValueField: '',
-        showArea: true, valuePrefix: '', valueSuffix: '', secondaryPrefix: '', secondarySuffix: '', height: 300
+        showArea: true, valuePrefix: '', valueSuffix: '', secondaryPrefix: '', secondarySuffix: '', height: 150
     },
     flatGauge: {
         chartTitle: '', query: '', maxValue: 100, referenceValue: null, referenceLabel: 'Avg',
@@ -81,7 +81,7 @@ const DEFAULT_CONFIGS = {
         chartTitle: '', query: '', valuePrefix: '$', valueSuffix: 'm'
     },
     waterfallChart: {
-        chartTitle: '', query: '', mode: 'delta', valuePrefix: '$', valueSuffix: '', height: 300
+        chartTitle: '', query: '', mode: 'delta', valuePrefix: '$', valueSuffix: '', height: 150
     },
     metricCard: {
         chartTitle: '', query: '', valuePrefix: '', valueSuffix: '',

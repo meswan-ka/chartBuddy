@@ -13,7 +13,7 @@ import {
 } from 'c/chartUtils';
 
 const SVG_WIDTH = 500;
-const DEFAULT_HEIGHT = 300;
+const DEFAULT_HEIGHT = 150;
 const PAD_TOP = 30;
 const PAD_RIGHT = 20;
 const PAD_BOTTOM = 50;
