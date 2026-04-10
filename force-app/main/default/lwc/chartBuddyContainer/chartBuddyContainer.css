@@ -2,6 +2,11 @@
     display: block;
 }
 
+lightning-layout-item {
+    display: flex;
+    justify-content: center;
+}
+
 .error-text {
     color: var(--slds-g-color-error-1, #ea001e);
     font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
