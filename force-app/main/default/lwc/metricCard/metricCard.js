@@ -110,4 +110,12 @@ export default class MetricCard extends LightningElement {
     get iconVariant() {
         return this.iconName && this.iconName.startsWith('utility:') ? 'inverse' : undefined;
     }
+
+    get iconPillClass() {
+        const base = 'icon-pill';
+        if (this.iconName && !this.iconName.startsWith('utility:')) {
+            return base + ' icon-pill_standard';
+        }
+        return base;
+    }
 }

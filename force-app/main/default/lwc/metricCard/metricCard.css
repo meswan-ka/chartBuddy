@@ -18,6 +18,12 @@
     flex-shrink: 0;
 }
 
+.icon-pill_standard {
+    --slds-c-icon-color-background: transparent;
+    --slds-c-icon-color-foreground-default: var(--slds-g-color-surface-1, #ffffff);
+    --slds-c-icon-color-foreground: var(--slds-g-color-surface-1, #ffffff);
+}
+
 .card-body {
     flex: 1;
     min-width: 0;
