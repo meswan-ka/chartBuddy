@@ -76,8 +76,7 @@ const DEFAULT_CONFIGS = {
         chartTitle: '', query: '', maxDots: 10
     },
     pipelineChart: {
-        chartTitle: '', query: '', valuePrefix: '$', valueSuffix: 'm',
-        objectApiName: '', picklistField: ''
+        chartTitle: '', query: '', valuePrefix: '$', valueSuffix: 'm'
     },
     waterfallChart: {
         chartTitle: '', query: '', mode: 'delta', valuePrefix: '$', valueSuffix: '', height: 300

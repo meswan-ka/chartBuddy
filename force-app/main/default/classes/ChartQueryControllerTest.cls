@@ -64,7 +64,7 @@ private class ChartQueryControllerTest {
     }
 
     @IsTest
-    static void testPicklistSortWithoutObjectFallsBack() {
+    static void testPicklistSortAutoDetectsFromQuery() {
         Account acc = [SELECT Id FROM Account LIMIT 1];
         String query = 'SELECT StageName label, COUNT(Id) cnt FROM Opportunity WHERE AccountId = :recordId GROUP BY StageName';
         List<ChartQueryController.ChartDataPoint> results = ChartQueryController.executeQueryWithPicklistSort(
@@ -73,7 +73,10 @@ private class ChartQueryControllerTest {
             null,
             null
         );
-        Assert.isFalse(results.isEmpty(), 'Should still return results without sort params');
+        Assert.isFalse(results.isEmpty(), 'Should return results with auto-detected sort');
+        if (results.size() > 1) {
+            Assert.areEqual('Prospecting', results[0].label, 'Auto-detect should sort by picklist order');
+        }
     }
 
     @IsTest

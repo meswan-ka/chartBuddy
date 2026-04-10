@@ -12,8 +12,8 @@
             <property name="query" type="String" label="SOQL Query" description="Use :recordId for context binding" />
             <property name="valuePrefix" type="String" label="Value Prefix" default="$" />
             <property name="valueSuffix" type="String" label="Value Suffix" default="m" />
-            <property name="objectApiName" type="String" label="Sort Object" description="Object API name for picklist sort (e.g. Opportunity)" />
-            <property name="picklistField" type="String" label="Sort Picklist Field" description="Picklist field to sort by (e.g. StageName)" />
+            <property name="objectApiName" type="String" label="Sort Object (auto-detected)" description="Optional override; auto-detected from FROM clause" />
+            <property name="picklistField" type="String" label="Sort Picklist Field (auto-detected)" description="Optional override; auto-detected from GROUP BY clause" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

@@ -17,18 +17,11 @@ export default class PipelineChart extends LightningElement {
     _error;
     _wired = false;
 
-    get _safeObjectApiName() {
-        return this.objectApiName || '';
-    }
-    get _safePicklistField() {
-        return this.picklistField || '';
-    }
-
     @wire(executeQueryWithPicklistSort, {
         query: '$query',
         recordId: '$recordId',
-        objectApiName: '$_safeObjectApiName',
-        picklistFieldName: '$_safePicklistField'
+        objectApiName: '',
+        picklistFieldName: ''
     })
     wiredData({ error, data }) {
         this._wired = true;

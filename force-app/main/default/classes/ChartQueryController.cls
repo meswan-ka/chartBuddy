@@ -76,13 +76,30 @@ public with sharing class ChartQueryController {
         String picklistFieldName
     ) {
         List<ChartDataPoint> points = executeQuery(query, recordId);
-        if (String.isBlank(objectApiName) || String.isBlank(picklistFieldName)) {
+        String objName = String.isNotBlank(objectApiName) ? objectApiName : parseObjectName(query);
+        String fieldName = String.isNotBlank(picklistFieldName) ? picklistFieldName : parseGroupByField(query);
+        if (String.isBlank(objName) || String.isBlank(fieldName)) {
             return points;
         }
-        Map<String, Integer> positionMap = getPicklistPositions(objectApiName, picklistFieldName);
+        Map<String, Integer> positionMap = getPicklistPositions(objName, fieldName);
+        if (positionMap.isEmpty()) {
+            return points;
+        }
         Integer fallback = positionMap.size();
         points.sort(new PicklistSorter(positionMap, fallback));
         return points;
+    }
+
+    private static String parseObjectName(String query) {
+        Pattern p = Pattern.compile('(?i)\\bFROM\\s+(\\w+)');
+        Matcher m = p.matcher(query);
+        return m.find() ? m.group(1) : null;
+    }
+
+    private static String parseGroupByField(String query) {
+        Pattern p = Pattern.compile('(?i)\\bGROUP\\s+BY\\s+(\\w+)');
+        Matcher m = p.matcher(query);
+        return m.find() ? m.group(1) : null;
     }
 
     private static Map<String, Integer> getPicklistPositions(String objectApiName, String fieldName) {
