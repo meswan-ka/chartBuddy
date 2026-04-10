@@ -250,7 +250,7 @@ export default class FlatGauge extends LightningElement {
     }
 
     get referenceLabelY() {
-        return BAR_Y + BAR_HEIGHT + 16;
+        return BAR_Y + BAR_HEIGHT / 2 + 18;
     }
 
     get titleColor() {

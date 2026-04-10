@@ -1,6 +1,6 @@
 <template>
     <div class="gauge-container">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 80" class="gauge-svg" role="img" aria-label={chartTitle}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 60" class="gauge-svg" role="img" aria-label={chartTitle}>
             <defs lwc:dom="manual" class="gauge-defs"></defs>
             <template lwc:if={hasData}>
                 <!-- Title -->
@@ -37,8 +37,8 @@
                     ></line>
                 </template>
 
-                <!-- Below-bar row: value on left, reference on right -->
-                <text x={trackX} y={belowBarY}>
+                <!-- Value + variance: inline with bar, right side -->
+                <text x={valueLabelX} y={valueLabelY}>
                     <tspan class="gauge-value" fill={titleColor}>{valueText}</tspan>
                     <template lwc:if={hasVariance}>
                         <tspan class="gauge-superscript" fill={varianceColor} dx="3" dy="-5">{varianceText}</tspan>
@@ -46,7 +46,7 @@
                 </text>
 
                 <template lwc:if={hasReference}>
-                    <text x={trackEndX} y={belowBarY} text-anchor="end" class="reference-label" fill={axisTextColor}>
+                    <text x={valueLabelX} y={referenceLabelY} class="reference-label" fill={axisTextColor}>
                         {referenceLabel} {referenceValueText}
                     </text>
                 </template>
