@@ -198,6 +198,10 @@ export default class SoqlQueryBuilder extends LightningElement {
         return this.profile.showLimit;
     }
 
+    get showLimitOnly() {
+        return this.profile.showLimit && !this.profile.showOrderBy;
+    }
+
     get renderedSlots() {
         const profile = this.profile;
         return profile.slots.map((slot, idx) => {
