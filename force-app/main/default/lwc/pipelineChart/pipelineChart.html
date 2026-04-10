@@ -47,6 +47,28 @@
             </template>
         </template>
 
+        <template lwc:if={isEmpty}>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="chart-svg"
+                 viewBox="0 0 600 140"
+                 preserveAspectRatio="xMidYMid meet"
+                 role="img"
+                 aria-label="No data available">
+                <template for:each={skeletonStages} for:item="stage">
+                    <path key={stage.key}
+                          d={stage.pathD}
+                          class="skeleton-shape"></path>
+                </template>
+                <text x="300" y="95"
+                      text-anchor="middle"
+                      font-size="12"
+                      class="skeleton-label">No data available</text>
+            </svg>
+            <template lwc:if={chartTitle}>
+                <div class="chart-title">{chartTitle}</div>
+            </template>
+        </template>
+
         <template lwc:if={isLoading}>
             <div class="loading">
                 <lightning-spinner alternative-text="Loading chart data" size="medium"></lightning-spinner>

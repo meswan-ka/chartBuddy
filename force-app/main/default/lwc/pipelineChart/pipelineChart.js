@@ -46,8 +46,42 @@ export default class PipelineChart extends LightningElement {
         return this._data && this._data.length > 0;
     }
 
+    get isEmpty() {
+        return this._wired && !this.hasData && !this._error;
+    }
+
     get isLoading() {
         return !this._wired;
+    }
+
+    get skeletonStages() {
+        const n = 4;
+        const svgWidth = 600;
+        const topPad = 25;
+        const bottomPad = 5;
+        const chartHeight = 140 - topPad - bottomPad;
+        const centerY = topPad + chartHeight / 2;
+        const segWidth = svgWidth / n;
+        const chevronDepth = Math.min(segWidth * 0.12, 15);
+        const heights = [chartHeight, chartHeight * 0.78, chartHeight * 0.56, chartHeight * 0.34];
+        const r = 4;
+
+        return heights.map((h, i) => {
+            const nextH = i < n - 1 ? heights[i + 1] : h * 0.7;
+            const overlap = i > 0 ? r / 2 : 0;
+            const x1 = i * segWidth - overlap;
+            const x2 = (i + 1) * segWidth;
+            const tl = { x: x1, y: centerY - h / 2 };
+            const tr = { x: x2 - chevronDepth, y: centerY - h / 2 };
+            const ct = { x: x2, y: centerY - nextH / 2 };
+            const cb = { x: x2, y: centerY + nextH / 2 };
+            const br = { x: x2 - chevronDepth, y: centerY + h / 2 };
+            const bl = { x: x1, y: centerY + h / 2 };
+            return {
+                key: `skel-${i}`,
+                pathD: this._roundedPentagonPath([tl, tr, ct, cb, br, bl], r)
+            };
+        });
     }
 
     get errorMessage() {

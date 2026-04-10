@@ -34,6 +34,16 @@
     padding: var(--slds-g-spacing-4, 1rem);
 }
 
+.skeleton-shape {
+    fill: var(--slds-g-color-surface-2, #e5e5e5);
+    opacity: 0.5;
+}
+
+.skeleton-label {
+    fill: var(--slds-g-color-on-surface-2, #706e6b);
+    font-style: italic;
+}
+
 .stage-label {
     fill: var(--slds-g-color-on-surface-1, #5C5C5C);
 }
