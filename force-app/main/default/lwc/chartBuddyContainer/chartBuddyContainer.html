@@ -14,7 +14,7 @@
             <div class="slds-p-around_small">
                 <lightning-layout multiple-rows>
                     <template for:each={columns} for:item="col">
-                        <lightning-layout-item key={col.id} size={col.width} padding="around-small">
+                        <lightning-layout-item key={col.id} size={col.renderWidth} padding="around-small">
 
                             <template lwc:if={col.isBarChart}>
                                 <c-bar-chart

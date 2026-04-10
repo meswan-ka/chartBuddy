@@ -209,6 +209,53 @@ export function describeArc(cx, cy, r, startAngle, endAngle) {
   return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`;
 }
 
+/**
+ * Distribute column widths proportionally to fill a 12-column grid.
+ * Each column's configured width is treated as a ratio. The output
+ * widths sum to exactly 12, with remainders distributed to the
+ * largest columns.
+ * @param {number[]} widths - Array of configured widths (1-12 each)
+ * @returns {number[]} - Adjusted widths that sum to 12
+ */
+export function distributeWidths(widths) {
+  if (!widths || widths.length === 0) return [];
+  const total = widths.reduce((sum, w) => sum + (w || 1), 0);
+  if (total === 12) return widths.map(w => w || 1);
+
+  // Compute proportional widths with floor, minimum 1
+  const scaled = widths.map(w => {
+    const raw = ((w || 1) / total) * 12;
+    return Math.max(1, Math.floor(raw));
+  });
+
+  // Distribute remainder to columns with the largest fractional parts
+  let remainder = 12 - scaled.reduce((sum, w) => sum + w, 0);
+  if (remainder > 0) {
+    const fractionals = widths.map((w, i) => ({
+      index: i,
+      frac: (((w || 1) / total) * 12) - scaled[i]
+    }));
+    fractionals.sort((a, b) => b.frac - a.frac);
+    for (let i = 0; i < remainder && i < fractionals.length; i++) {
+      scaled[fractionals[i].index]++;
+    }
+  }
+
+  // If we over-allocated (rounding up from minimum 1), trim the largest
+  let excess = scaled.reduce((sum, w) => sum + w, 0) - 12;
+  if (excess > 0) {
+    const bySize = scaled.map((w, i) => ({ index: i, width: w }));
+    bySize.sort((a, b) => b.width - a.width);
+    for (let i = 0; i < excess && i < bySize.length; i++) {
+      if (scaled[bySize[i].index] > 1) {
+        scaled[bySize[i].index]--;
+      }
+    }
+  }
+
+  return scaled;
+}
+
 function polarToCartesian(cx, cy, r, angleDeg) {
   const angleRad = ((angleDeg - 90) * Math.PI) / 180;
   return {

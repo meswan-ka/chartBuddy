@@ -576,7 +576,7 @@
                 <template lwc:if={hasColumns}>
                     <lightning-layout multiple-rows>
                         <template for:each={renderedColumns} for:item="col">
-                            <lightning-layout-item key={col.id} size={col.width} padding="around-small">
+                            <lightning-layout-item key={col.id} size={col.renderWidth} padding="around-small">
 
                                 <!-- Placeholder when no query configured -->
                                 <template lwc:if={col.canPreview}>

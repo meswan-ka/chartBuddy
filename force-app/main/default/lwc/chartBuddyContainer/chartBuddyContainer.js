@@ -1,5 +1,6 @@
 import { LightningElement, api } from 'lwc';
 import getConfigByName from '@salesforce/apex/ChartBuddyConfigController.getConfigByName';
+import { distributeWidths } from 'c/chartUtils';
 
 const VALID_CHART_TYPES = new Set([
     'barChart',
@@ -74,11 +75,13 @@ export default class ChartBuddyContainer extends LightningElement {
         }
 
         const limited = parsed.columns.slice(0, MAX_COLUMNS);
-        this.columns = limited
-            .filter((col) => col.chartType && VALID_CHART_TYPES.has(col.chartType))
-            .map((col, index) => ({
+        const valid = limited.filter((col) => col.chartType && VALID_CHART_TYPES.has(col.chartType));
+        const rawWidths = valid.map((col) => this.clampWidth(col.width));
+        const adjusted = distributeWidths(rawWidths);
+        this.columns = valid.map((col, index) => ({
                 id: col.id || 'col-' + (index + 1),
                 width: this.clampWidth(col.width),
+                renderWidth: adjusted[index] || this.clampWidth(col.width),
                 config: col.config || {},
                 chartType: col.chartType,
                 isBarChart: col.chartType === 'barChart',

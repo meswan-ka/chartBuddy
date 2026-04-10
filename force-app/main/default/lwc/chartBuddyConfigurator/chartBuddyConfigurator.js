@@ -4,6 +4,7 @@ import getConfigs from '@salesforce/apex/ChartBuddyConfigController.getConfigs';
 import saveConfig from '@salesforce/apex/ChartBuddyConfigController.saveConfig';
 import deleteConfig from '@salesforce/apex/ChartBuddyConfigController.deleteConfig';
 import { refreshApex } from '@salesforce/apex';
+import { distributeWidths } from 'c/chartUtils';
 
 const CHART_TYPE_OPTIONS = [
     { label: 'Bar / Column Chart', value: 'barChart' },
@@ -149,14 +150,18 @@ export default class ChartBuddyConfigurator extends LightningElement {
 
     get renderedColumns() {
         const lastIdx = this.columns.length - 1;
+        const rawWidths = this.columns.map(c => c.width || 6);
+        const adjusted = distributeWidths(rawWidths);
         return this.columns.map((col, idx) => {
             const chartType = col.chartType;
             const isExpanded = this.expandedColumns[col.id] === true;
             const showPrefix = TYPES_WITH_PREFIX.has(chartType);
             const showSuffix = TYPES_WITH_SUFFIX.has(chartType);
+            const renderWidth = adjusted[idx] || col.width;
             return {
                 ...col,
                 widthStr: String(col.width),
+                renderWidth,
                 columnLabel: `#${idx + 1}`,
                 chartTypeBadge: CHART_TYPE_LABEL_MAP[chartType] || chartType,
                 headerTitle: col.config.chartTitle || '',
