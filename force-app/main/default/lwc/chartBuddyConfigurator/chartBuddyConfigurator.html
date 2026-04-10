@@ -489,6 +489,26 @@
                                     </div>
                                 </template>
 
+                                <!-- pipelineChart fields -->
+                                <template lwc:if={col.isPipelineChart}>
+                                    <lightning-input
+                                        label="Sort Object API Name"
+                                        value={col.config.objectApiName}
+                                        data-id={col.id}
+                                        data-field="objectApiName"
+                                        onchange={handleFieldChange}
+                                        placeholder="e.g. Opportunity"
+                                    ></lightning-input>
+                                    <lightning-input
+                                        label="Sort Picklist Field"
+                                        value={col.config.picklistField}
+                                        data-id={col.id}
+                                        data-field="picklistField"
+                                        onchange={handleFieldChange}
+                                        placeholder="e.g. StageName"
+                                    ></lightning-input>
+                                </template>
+
                                 <!-- waterfallChart fields -->
                                 <template lwc:if={col.isWaterfallChart}>
                                     <lightning-combobox
@@ -660,6 +680,8 @@
                                             query={col.config.query}
                                             value-prefix={col.config.valuePrefix}
                                             value-suffix={col.config.valueSuffix}
+                                            object-api-name={col.config.objectApiName}
+                                            picklist-field={col.config.picklistField}
                                             record-id={contextRecordId}>
                                         </c-pipeline-chart>
                                     </template>
